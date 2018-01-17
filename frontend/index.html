@@ -1,0 +1,231 @@
+<html>
+    <head>
+        <Title>F25 Dashboard</title>
+        <HTA:APPLICATION ID="F25Dash"
+            APPLICATIONNAME="F25 Dashboard"
+            BORDER="no"
+            CAPTION="no"
+            SHOWINTASKBAR="yes"
+            SINGLEINSTANCE="yes"
+            SYSMENU="no"
+            SCROLL="no"
+            WINDOWSTATE="normal">
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <script type="text/javascript" src="dep/jsgl.min.js"></script>
+    </head>
+    
+    <body>
+        <div id="panel" style="width: 780px; height: 460px"></div>
+        <script type="text/javascript" language="javascript">
+            
+            
+            /**
+             First, read the settings from the settings.json file
+             */
+            var fs = require("fs");
+            var contents = fs.readFileSync("/home/dash/f26dash/frontend/settings.json");
+            var settings = JSON.parse(contents);
+                
+            var width = settings.display_width;
+            var height = settings.display_height;
+            var logoURL = settings.logoURL;
+            var backgroundColor = settings.background;
+            var coolColor = settings.cool;
+            var nominalColor = settings.nominal;
+            var intermediateColor = settings.intermediate;
+            var maximalColor = settings.maximal;
+            
+            
+            
+            
+            panel = new jsgl.Panel(document.getElementById("panel"));
+            
+            
+            var maxBarHeight = height - 240
+            var barPadding = 65; //how high off the bottom of the display the bottom of the bars are
+            var rpmPadding = width/8 - 35/2;
+            
+            var logo = panel.createImage();
+            logo.setUrl(logoURL);
+            logo.setVerticalAnchor(jsgl.VerticalAnchor.MIDDLE);
+            logo.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
+            logo.setLocationXY(width/2,height - 90);
+            logo.setWidth(100);
+            logo.setHeight(80);
+            logo.setZIndex(20);
+            panel.addElement(logo);
+            
+            var background = panel.createRectangle();
+            background.setLocationXY(0,0);
+            background.setHeight(height);
+            background.setWidth(width);
+            background.getFill().setColor(backgroundColor);
+            var textColor = "white";
+            if(backgroundColor == "white"){
+                textColor = "black";
+            }
+            panel.addElement(background);
+            
+        function Dash_View(){
+            
+            this.oilt = new Meter(width/8, "oilT", "℃", 20, 160);
+            
+            this.oilp = new Meter(width/4, "oilP", "bar", 0, 1.6);
+            
+            this.watert = new Meter(3 * width / 4, "waterT", "℃", 20, 140);
+            
+            this.volt = new Meter(7 * width/8, "volt", "V", 10.5, 14.5);
+            
+            this.gear = getDashLabel("N",width/2,height/2,175,textColor);
+            panel.addElement(this.gear);
+            
+            this.rpmMeter = new RPMMeter(0, 10500);
+            
+            this.update = function(data){
+                if("RPM" in data){
+                    this.rpmMeter.updateValue(data["RPM"]);
+                    
+                }
+                if("OILT" in data){
+                    this.oilt.updateValue(data["OILT"]);
+                }
+                if("OILP" in data){
+                    this.oilp.updateValue(data["OILP"]);
+                }
+                if("WATERT" in data){
+                    this.watert.updateValue(data["WATERT"]);
+                }
+                if("BATT" in data){
+                    this.volt.updateValue(data["BATT"]);
+                }
+            }
+        }
+        
+        function getDashLabel(name, x, y, size, color){
+            var label = panel.createLabel();
+            label.setText(name);
+            label.setVerticalAnchor(jsgl.VerticalAnchor.MIDDLE);
+            label.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
+            label.setLocationXY(x,y);
+            label.setFontSize(size);
+            label.setFontColor(color);
+            return label;
+        }
+        
+        function RPMMeter(min,max){
+            this.min = min;
+            this.max = max;
+            this.label = getDashLabel("0 rpm", width/2, 10, 20, textColor);
+            this.rectangle = panel.createRectangle();
+            this.rectangle.setHeight(25);
+            this.rectangle.setWidth(0);
+        
+            this.rectangle.setLocationXY(rpmPadding,35);
+            this.rectangle.getFill().setColor(coolColor);
+            //panel.addElement(this.label);
+            panel.addElement(this.rectangle);
+            
+            //set up the values
+            for(i = 0; i < 11; ++i){
+                var line = panel.createRectangle();
+                var x = rpmPadding +(width - 2 * rpmPadding) * (i / 10.5);
+                line.setWidth(5);
+                line.setHeight(25);
+                line.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
+                line.setLocationXY(x, 35);
+                line.getFill().setColor(textColor);
+                
+                var val = getDashLabel("" + i, x, 80, 20, textColor);
+                panel.addElement(val);
+                panel.addElement(line);
+            }
+            
+            this.updateValue = function(val){
+                this.label.setText(val + " rpm");
+                var range = max - min;
+                var trueval = val - min;
+                var maxLen = width - rpmPadding * 2;
+                var testval = trueval / range;
+                if (val > this.max){
+                    val = this.max;
+                }
+                
+                this.rectangle.setWidth(maxLen * testval);
+                if (testval <= .50){
+                    this.rectangle.getFill().setColor(nominalColor);
+                }else if (testval <= .75){
+                    this.rectangle.getFill().setColor(intermediateColor);
+                }else{
+                    this.rectangle.getFill().setColor(maximalColor);
+                }
+            }
+        }
+        
+        
+        function Meter(x,name,unit,min,max){
+            
+            this.unit = unit;
+            this.max = max;
+            this.min = min;
+                
+            this.label = getDashLabel(name, x, height - 25, 20, textColor);
+                
+            this.rectangle = panel.createRectangle();
+            this.rectangle.setWidth(35);
+            this.rectangle.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
+            this.rectangle.setLocationXY(x, height - barPadding - maxBarHeight);
+            this.rectangle.getFill().setColor(coolColor);
+                
+            this.value = getDashLabel(this.unit, x, height - 50, 20, textColor);
+                
+            panel.addElement(this.label);
+            panel.addElement(this.rectangle);
+            panel.addElement(this.value);
+        
+            
+            this.updateValue = function(val){
+                var range = this.max - this.min;
+                var testval = val - this.min;
+                
+                this.value.setText(val + " " + this.unit);
+                var trueval = maxBarHeight * (testval/range);
+                this.rectangle.setHeight(trueval);
+                this.rectangle.setY(height - barPadding - trueval);
+                
+                if(val > this.max){
+                    val = this.max;
+                }
+                
+                //now set the color
+                if (testval <= range/2){
+                    this.rectangle.getFill().setColor(coolColor);
+                }else if (testval <= range * 3/4){
+                    this.rectangle.getFill().setColor(nominalColor);
+                }else{
+                    this.rectangle.getFill().setColor(maximalColor);
+                }
+            }
+        }
+        
+        var view = new Dash_View();
+        
+        
+        require("net");
+        
+        var datasocket = new WebSocket("ws:127.0.0.1:8765");
+        datasocket.onopen = function(event){
+            datasocket.send("Dashboard Frontend");
+        };
+        
+        datasocket.onmessage = function(event){
+            var data = JSON.parse(event.data);
+            
+            view.update(data);
+        };
+        
+        
+        </script>
+    </body>
+</html>
+
+
