@@ -9,8 +9,5 @@
     "height": 480,
     "fullscreen": false,
     "frame": false
-  },
-  "dependencies": {
-    "systemjs": "^0.20.19"
   }
 }
