@@ -1,6 +1,6 @@
-This file will explain how the dash operates using this raspberry pi.
+This explains how the dash operates using a raspberry pi logged in as dash.
 
-There are two main parts of the dash operation, the backend and the fronend.
+There are two main parts of the dash operation, the backend and the frontend.
 
 The backend is a set of python 3 scripts that work together to listen for data 
 from the CAN shield, provide a model for the frontend, and execute shifts.
