@@ -1,13 +1,15 @@
+
+
 /**
     Contains a value from the ECU, maintains a visual.
 **/
 function DashValue(name, unit, min, max){
-    this.name = name;
-    this.unit = unit;
-    this.min = min;
-    this.max = max;
-    this.value = this.min;
-    this.visual = null;
+    this.name = name; // displayed by certain visuals
+    this.unit = unit; // unit displayed by certain visuals
+    this.min = min; // minimum value
+    this.max = max; // maximum value
+    this.value = this.min; // default to minimum
+    this.visual = null; // this is where we attach a visual
 
     //tells this value to update the visual when the value is changed
     this.setVisual = function(visual){
@@ -31,18 +33,21 @@ function Meter(x, name, unit, min, max){
     this.min = min;
     this.label = getDashLabel(name, x, height - 25, 20, textColor);
 
+    // initialize the rectangle that represents the value
     this.rectangle = panel.createRectangle();
     this.rectangle.setWidth(35);
     this.rectangle.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
     this.rectangle.setLocationXY(x, height - barPadding - maxBarHeight);
     this.rectangle.getFill().setColor(coolColor);
 
+    // set up a label to show the value
     this.value = getDashLabel(this.unit, x, height - 50, 20, textColor);
 
     panel.addElement(this.label);
     panel.addElement(this.rectangle);
     panel.addElement(this.value);
 
+    // change the rectangle to represent the value
     this.setValue = function(val){
         var range = this.max - this.min;
         var testval = val - this.min;
@@ -75,13 +80,16 @@ function Meter(x, name, unit, min, max){
     }
 }
 
+/*
+Creates a meter at the top of the screen that represents RPM as a horizontal bar
+*/
 function RPMMeter(min,max,low,mid,high){
     this.min = min;
     this.max = max;
-    this.low = low;
-    this.mid = mid;
-    this.high = high;
-    this.rectangle = panel.createRectangle();
+    this.low = low; // color for minimal values
+    this.mid = mid; // color for nominal values
+    this.high = high; // color for maximal values
+    this.rectangle = panel.createRectangle(); // represents the RPM
     this.rectangle.setHeight(25);
     this.rectangle.setWidth(0);
 
@@ -109,6 +117,7 @@ function RPMMeter(min,max,low,mid,high){
         this.lines.push(val);
     }
 
+    // change the size and color of rectangle based on the RPM
     this.setValue = function(val){
         var range = max - min;
         var trueval = val - min;
@@ -138,18 +147,24 @@ function RPMMeter(min,max,low,mid,high){
     }
 }
 
-function incrementalRPMMeter(min,max,incr,redval,blinkval){
+/*
+Like RPMMeter except broken up into increments.
+Only shows yellow and red. Blinks at specified value.
+*/
+function IncrementalRPMMeter(min,max,incr,redval,blinkval){
     this.min = min;
     this.max = max;
-    this.incr = incr;
-    this.redval = redval;
-    this.blinkval = blinkval;
-    var bars = [];
-    var barPadding = 20;
-    var cumulativeWidth = width - 2 * barPadding;
-    var incrWidth = cumulativeWidth/((max-min)/this.incr);
+    this.incr = incr; // range of RPM an increment represents
+    this.redval = redval; // value color switches from yellow to red at
+    this.blinkval = blinkval; // value meter starts blinking at
+    var bars = []; // holds the bars that represent the increments
+    var barPadding = 20; // 1/2 the space in between 2 bars
+    var blinkTime = 200; // time between on and off states of bars
+    var cumulativeWidth = width - 2 * barPadding; // width of whole meter
+    var incrWidth = cumulativeWidth/((max-min)/this.incr); // width of increment
 
-    var barWidth = incrWidth - 2 * barPadding;
+    var barWidth = incrWidth - 2 * barPadding; // width of bar
+    // set up the bars
     for(var i = 0; i <= (max-min)/this.incr; ++i){
         var r = panel.createRectangle();
         r.setHeight(50);
@@ -160,6 +175,7 @@ function incrementalRPMMeter(min,max,incr,redval,blinkval){
         panel.addElement(r);
     }
 
+    // this code sets up the animation required to make the bars blink
     this.animator = new jsgl.util.Animator();
     this.animator.setStartValue(0);
     this.animator.setEndValue(1);
@@ -178,8 +194,9 @@ function incrementalRPMMeter(min,max,incr,redval,blinkval){
             on = !on;
         }
     });
-    this.animator.setDuration(500);
+    this.animator.setDuration(blinkTime);
 
+    // light up correct amount of bars, start or stop blinking
     this.setValue = function(val){
         var range = this.max - this.min;
         var testval = val - this.min;
@@ -214,6 +231,9 @@ function incrementalRPMMeter(min,max,incr,redval,blinkval){
     }
 }
 
+/*
+Changing label that represents gear position.
+*/
 function GearLabel(x,y){
     this.label = getDashLabel("N",x,y,175,textColor);
     panel.addElement(this.label);
@@ -225,6 +245,9 @@ function GearLabel(x,y){
     }
 }
 
+/*
+Circle that represents a value using a color.
+*/
 function Indicator(name,x,y,radius,min,max){
     this.label = getDashLabel(name, x, y + radius + 50, 20, textColor);
     panel.addElement(this.label);
@@ -238,6 +261,8 @@ function Indicator(name,x,y,radius,min,max){
 
     this.min = min;
     this.max = max;
+
+    // set the circle's color representative of the new value
     this.setValue = function(val){
         var range = this.max - this.min;
         var testval = val - this.min;

@@ -105,3 +105,13 @@ def read_fake_input(line):
         settings.car_status["AIRT"] = int(fields[2])
     elif identifier == "wait":
         time.sleep(float(fields[1]))
+
+def read_user_input():
+    """ constantly reads user input to send the frontend, for debugging
+        ** must be correct values read by dash_model
+    """
+    line = input("Enter <name> <value>: ")
+    fields = line.split(" ")
+    name = fields[0]
+    value = fields[1]
+    settings.car_status[name] = value

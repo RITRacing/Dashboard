@@ -1,3 +1,4 @@
+
 /**
  Effectively Abstract: provides a collection of dash visuals and a way to
  attach the information to them
@@ -84,7 +85,5 @@ DriveDisplay.prototype.show = function(){
     oilt.setVisual(new Indicator("CEL",width - width/4,height/2,height/8,
     oilt.min, oilt.max));
     gear.setVisual(new GearLabel(width/4, height/2));
-    //rpm.setVisual(new RPMMeter(9000, 11500, intermediateColor,
-    //intermediateColor, maximalColor));
-    rpm.setVisual(new incrementalRPMMeter(9000,11500, 500, 10500, 10500));
+    rpm.setVisual(new IncrementalRPMMeter(9000,11500, 500, 10500, 10500));
 }
