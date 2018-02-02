@@ -72,6 +72,25 @@ ParkDisplay.prototype.show = function(){
 }
 
 /**
+Minimalized display shown when the car is parked, can hold more information
+*/
+var MinParkDisplay = function(){
+    Display.apply(this);
+}
+
+MinParkDisplay.prototype = Object.create(Display.prototype);
+MinParkDisplay.prototype.constructor = MinParkDisplay;
+
+MinParkDisplay.prototype.show = function(){
+    oilt.setVisual(new StatLabel(width/8,height/4,oilt.name, oilt.unit));
+    oilp.setVisual(new StatLabel(width/8,height/2,oilp.name,oilp.unit));
+    watert.setVisual(new StatLabel(7*width/8,height/4,watert.name, watert.unit));
+    volt.setVisual(new StatLabel(7*width/8,height/2,volt.name,volt.unit));
+    rpm.setVisual(new RPMMeter(rpm.min,rpm.max,nominalColor,
+    intermediateColor,maximalColor));
+}
+
+/**
  Display shown when the car is in motion
  **/
 var DriveDisplay = function(){

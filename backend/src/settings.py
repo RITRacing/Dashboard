@@ -85,7 +85,7 @@ can_channel = 16
 """ port the front end node.js web server listens on """
 front_end_port = 8765
 
-""" indicates if the pi is connected to the car, should use test data, or should use user input 
+""" indicates if the pi is connected to the car, should use test data, or should use user input
     three values: car, test, user
 """
 debug = "user"

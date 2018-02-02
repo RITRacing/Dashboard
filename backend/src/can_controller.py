@@ -89,7 +89,7 @@ def read_input():
 
 
 def read_fake_input(line):
-    """ read data from a csv file (for when the ECU isnt available) """
+    """ read data from a .csv file (for when the ECU isnt available) """
 
     fields = line.split(',')
     identifier = fields[0]
@@ -99,7 +99,7 @@ def read_fake_input(line):
         settings.car_status["WATERT"] = int(fields[3])
         settings.car_status["OILP"] = float(fields[4])
         settings.car_status["GEAR"] = int(fields[5])
-        settings.car_status["SPEED"] = int(fields[6])
+        settings.car_status["SPEED"] = float(fields[6])
     elif identifier == "ECU_IDsec":
         settings.car_status["BATT"] = float(fields[1])
         settings.car_status["AIRT"] = int(fields[2])

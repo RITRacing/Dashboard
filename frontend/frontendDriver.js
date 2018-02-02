@@ -94,7 +94,8 @@ function getDashLabel(name, x, y, size, color){
                 return label;
 }
 
-var parkDisplay = new ParkDisplay();
+//var parkDisplay = new ParkDisplay();
+var parkDisplay = new MinParkDisplay();
 var driveDisplay = new DriveDisplay();
 var currentDisplay = parkDisplay;
 

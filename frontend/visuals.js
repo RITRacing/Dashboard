@@ -246,37 +246,85 @@ function GearLabel(x,y){
 }
 
 /*
+Changing label that represents any value.
+*/
+function StatLabel(x,y,name,unit){
+    this.title = getDashLabel(name,x,y,25,textColor);
+    this.value = getDashLabel("wait",x,y+40,50,textColor);
+    this.value.setHorizontalAnchor(jsgl.HorizontalAnchor.RIGHT);
+    this.suffix = getDashLabel(unit,x+20,y+40,25,textColor);
+
+    panel.addElement(this.title);
+    panel.addElement(this.value);
+    panel.addElement(this.suffix);
+
+    this.setValue = function(val){
+        this.value.setText(val);
+    }
+
+    this.destroy = function(){
+        panel.removeElement(this.title);
+        panel.removeElement(this.value);
+        panel.removeElement(this.suffix);
+    }
+}
+
+/*
 Circle that represents a value using a color.
 */
 function Indicator(name,x,y,radius,min,max){
     this.label = getDashLabel(name, x, y + radius + 50, 20, textColor);
     panel.addElement(this.label);
-    this.circle = panel.createCircle();
-    this.circle.setRadius(radius);
-    this.circle.getStroke().setColor("gray");
-    this.circle.getFill().setColor("blue");
-    this.circle.setCenterX(x);
-    this.circle.setCenterY(y);
-    panel.addElement(this.circle);
+    var circle = panel.createCircle();
+    circle.setRadius(radius);
+    circle.getStroke().setColor("gray");
+    circle.getFill().setColor("blue");
+    circle.setCenterX(x);
+    circle.setCenterY(y);
+    panel.addElement(circle);
 
     this.min = min;
     this.max = max;
+
+    var blinkTime = 200;
+
+    this.animator = new jsgl.util.Animator();
+    this.animator.setStartValue(0);
+    this.animator.setEndValue(1);
+    this.animator.setRepeating(true);
+
+    var on = true;
+    this.animator.addStepListener(function(val){
+        if(val == 1){
+            if(on){
+                circle.getFill().setColor("gray");
+            }else{
+                circle.getFill().setColor("red");
+            }
+            on = !on;
+        }
+    });
+    this.animator.setDuration(blinkTime);
 
     // set the circle's color representative of the new value
     this.setValue = function(val){
         var range = this.max - this.min;
         var testval = val - this.min;
         if(testval/range <= 1/2){
-            this.circle.getFill().setColor(coolColor);
+            if(this.animator.isPlaying())this.animator.pause();
+            circle.getFill().setColor(coolColor);
         }else if(testval/range <= 3/4){
-            this.circle.getFill().setColor(nominalColor);
+            if(this.animator.isPlaying())this.animator.pause();
+            circle.getFill().setColor(nominalColor);
         }else{
-            this.circle.getFill().setColor(maximalColor);
+
+            if(!this.animator.isPlaying())this.animator.play();
+            circle.getFill().setColor(maximalColor);
         }
     }
 
     this.destroy = function(){
         panel.removeElement(this.label);
-        panel.removeElement(this.circle);
+        panel.removeElement(circle);
     }
 }
