@@ -2,3 +2,4 @@ frontend/dep/*
 frontend/dash_bin
 backend/.DS_Store
 backend/.idea
+backend/tests/endurance.xlsx
