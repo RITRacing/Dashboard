@@ -3,3 +3,5 @@ frontend/dash_bin
 backend/.DS_Store
 backend/.idea
 backend/tests
+backend/*.pyc
+backend/__pycache__
