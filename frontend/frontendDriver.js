@@ -11,6 +11,7 @@ var coolColor = settings.cool;
 var nominalColor = settings.nominal;
 var intermediateColor = settings.intermediate;
 var maximalColor = settings.maximal;
+var carType = settings.car_type;
 
 //create the panel (acts as a canvas; consolidates all elements)
 panel = new jsgl.Panel(document.getElementById("panel"));
@@ -52,6 +53,7 @@ volt = new DashValue("volt", "V", 10.5, 14.5);
 gear = new DashValue("GEAR", "", 0, 12);
 gear.update("N");
 rpm = new DashValue("RPM", "", 0, 10500);
+soc = new DashValue("SOC", "%", 0, 100);
 
 function updateData(data){
     if("OILT" in data){
@@ -70,6 +72,8 @@ function updateData(data){
         rpm.update(data["RPM"]);
     }
     if("GEAR" in data){
+
+        //since the e car doesnt send gear, only the c car will switch here
         gear.update(data["GEAR"]);
         if(gear.value == "N" && currentDisplay == driveDisplay){
             driveDisplay.hide();
@@ -80,6 +84,9 @@ function updateData(data){
             currentDisplay = driveDisplay;
             driveDisplay.show();
         }
+    }
+    if("SOC" in  data){
+        soc.update(data["SOC"]);
     }
 }
 
@@ -93,11 +100,16 @@ function getDashLabel(name, x, y, size, color){
                 label.setFontColor(color);
                 return label;
 }
-
-//var parkDisplay = new ParkDisplay();
-var parkDisplay = new MinParkDisplay();
-var driveDisplay = new DriveDisplay();
-var currentDisplay = parkDisplay;
+var parkDisplay;
+var driveDisplay;
+var currentDisplay;
+if(carType == 'c'){
+    parkDisplay = new MinParkDisplay();
+    driveDisplay = new DriveDisplay();
+    currentDisplay = parkDisplay;
+}else{
+    currentDisplay = new EDisplay();
+}
 
 currentDisplay.show();
 

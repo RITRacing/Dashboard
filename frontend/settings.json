@@ -6,5 +6,6 @@
     "cool":"blue",
     "nominal":"green",
     "intermediate":"yellow",
-    "maximal":"red"
+    "maximal":"red",
+	"car_type":"c"
 }

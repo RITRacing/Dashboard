@@ -19,7 +19,8 @@ controller_id = {
     "ECU_IDprim":0x00FF,
     "ECU_IDsec" :0x00FC,
     "TireTempF" :0x03F2,
-    "TireTempR" :0x03F4
+    "TireTempR" :0x03F4,
+    "ECar"      : 0x0626
 }
 
 """ CAN id of message sent to ECU indicating shift status """

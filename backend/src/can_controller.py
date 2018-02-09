@@ -86,10 +86,12 @@ def read_input():
     elif sender_id == settings.controller_id["ECU_IDsec"]:
         settings.car_status["BATT"] = int((sender_data[0] << 8) + sender_data[1]) / 1000
         settings.car_status["AIRT"] = int(sender_data[2] + sender_data[3])
+    elif sender_id == settings.controller_id["ECar"]:
+        settings.car_status["SOC"] = int(sender_data[0]);
 
 
 def read_fake_input(line):
-    """ read data from a .csv file (for when the ECU isnt available) """
+    """ read data from a csv file (for when the ECU isnt available) """
 
     fields = line.split(',')
     identifier = fields[0]
@@ -103,12 +105,14 @@ def read_fake_input(line):
     elif identifier == "ECU_IDsec":
         settings.car_status["BATT"] = float(fields[1])
         settings.car_status["AIRT"] = int(fields[2])
+    elif identifier == "ECar":
+        settings.car_status["SOC"] = int(fields[1])
     elif identifier == "wait":
         time.sleep(float(fields[1]))
 
 def read_user_input():
     """ constantly reads user input to send the frontend, for debugging
-        ** must be correct values read by dash_model
+        ** must be same keys read by dash_model
     """
     line = input("Enter <name> <value>: ")
     fields = line.split(" ")

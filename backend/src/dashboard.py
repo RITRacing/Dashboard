@@ -16,8 +16,6 @@ import threading
 import sys
 import websockets
 import asyncio
-from openpyxl import Workbook
-from openpyxl import load_workbook
 """
 -Takes information from the ECU and passes it to the front end
 -Listens for driver paddle presses and initiates shifts
@@ -73,11 +71,9 @@ def read_can_input():
         dash_log.print_msg("STARTUP", "reading CAN")
     while True:
         if settings.debug == "test":
-            filename = sys.argv[1]
-            with open(filename) as test_file:
+            with open(sys.argv[1]) as test_file:
                 for line in test_file:
                     can_controller.read_fake_input(line)
-
 
         elif settings.debug == "car":
             can_controller.read_input()

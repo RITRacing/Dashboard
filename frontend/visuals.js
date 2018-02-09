@@ -151,7 +151,7 @@ function RPMMeter(min,max,low,mid,high){
 Like RPMMeter except broken up into increments.
 Only shows yellow and red. Blinks at specified value.
 */
-function IncrementalRPMMeter(min,max,incr,redval,blinkval){
+function IncrementalRPMMeter(min,max,incr,redval,blinkval,backgroundBlink){
     this.min = min;
     this.max = max;
     this.incr = incr; // range of RPM an increment represents
@@ -181,13 +181,16 @@ function IncrementalRPMMeter(min,max,incr,redval,blinkval){
     this.animator.setEndValue(1);
     this.animator.setRepeating(true);
     var on = true;
+    var backon = false; // whether or not the background should blink
     var numbars = 0;
     this.animator.addStepListener(function(val){
         if(val == 1){
             for(var i = 0; i <= numbars; ++i){
                 if(on){
                     bars[i].getFill().setColor('gray');
+                    if(backon) background.getFill().setColor(backgroundColor);
                 }else{
+                    if(backon)background.getFill().setColor('orange');
                     bars[i].getFill().setColor('red');
                 }
             }
@@ -201,14 +204,14 @@ function IncrementalRPMMeter(min,max,incr,redval,blinkval){
         var range = this.max - this.min;
         var testval = val - this.min;
         numbars = testval / this.incr;
+
+        // set all the bars accordingly
         for(var i = 0; i < bars.length; ++i){
 
             if(i <= numbars){
                 if(val < redval){
-                    this.animator.pause();
                     bars[i].getFill().setColor("yellow");
                 }else if(val <= blinkval){
-                    this.animator.pause();
                     bars[i].getFill().setColor("red");
                 }else{
                     bars[i].getFill().setColor("red");
@@ -217,10 +220,21 @@ function IncrementalRPMMeter(min,max,incr,redval,blinkval){
                 bars[i].getFill().setColor("gray");
             }
         }
+        // put background color back to normal OR turn on background blinking
+        if(val >= 11000 && backgroundBlink){
+            backon = true;
+        }else{
+            backon = false;
+            background.getFill().setColor(backgroundColor);
+        }
+
+        // play animation if necessary
         if(val >= blinkval){
             if(!this.animator.isPlaying()){
                 this.animator.play();
             }
+        }else{
+            this.animator.pause();
         }
     }
 
@@ -248,11 +262,11 @@ function GearLabel(x,y){
 /*
 Changing label that represents any value.
 */
-function StatLabel(x,y,name,unit){
-    this.title = getDashLabel(name,x,y,25,textColor);
-    this.value = getDashLabel("wait",x,y+40,50,textColor);
+function StatLabel(x,y,size,name,unit){
+    this.title = getDashLabel(name,x,y,size/2,textColor);
+    this.value = getDashLabel("wait",x,y+size * 4/5,size,textColor);
     this.value.setHorizontalAnchor(jsgl.HorizontalAnchor.RIGHT);
-    this.suffix = getDashLabel(unit,x+20,y+40,25,textColor);
+    this.suffix = getDashLabel(unit,x+size * 2/5,y+size * 4/5,size/2,textColor);
 
     panel.addElement(this.title);
     panel.addElement(this.value);

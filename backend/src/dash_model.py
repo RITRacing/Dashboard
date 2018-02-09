@@ -14,7 +14,8 @@ def update_frontend(websocket, path):
     watert = 0
     batt = 0
     rpm = 0
-    gear = 0;
+    gear = 0
+    soc = 0
 
     connection_name = yield from websocket.recv()
     dash_log.print_msg("STARTUP","connected to: " + connection_name)
@@ -38,6 +39,9 @@ def update_frontend(websocket, path):
         if "BATT" in settings.car_status and settings.car_status["BATT"] != batt:
             message["BATT"] = settings.car_status["BATT"]
             batt = settings.car_status["BATT"]
+        if "SOC" in settings.car_status and settings.car_status["SOC"] != soc:
+            message["SOC"] = settings.car_status["SOC"]
+            soc = settings.car_status["SOC"]
         """
         if packSOC.barName in settings.car_status and settings.car_status[packSOC.barName] != packSOC.value:
             packSOC.updateBar(settings.car_status[packSOC.barName])
