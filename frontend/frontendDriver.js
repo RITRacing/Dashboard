@@ -52,9 +52,13 @@ watert = new DashValue("waterT", "℃", 20, 140);
 volt = new DashValue("volt", "V", 10.5, 14.5);
 gear = new DashValue("GEAR", "", 0, 12);
 gear.update("N");
-rpm = new DashValue("RPM", "", 0, 10500);
+rpm = new DashValue("RPM", "", 0, 11500);
 soc = new DashValue("SOC", "%", 0, 100);
+lambdactl = new DashValue("LAMDA CTL", "", 0, 1);
+flc = new DashValue("FLC", "", .5, 1.5);
 
+// updates visuals based on data received
+// TODO - write code to receive lambdactl and flc messages
 function updateData(data){
     if("OILT" in data){
         oilt.update(data["OILT"]);
@@ -91,14 +95,14 @@ function updateData(data){
 }
 
 function getDashLabel(name, x, y, size, color){
-                var label = panel.createLabel();
-                label.setText(name);
-                label.setVerticalAnchor(jsgl.VerticalAnchor.MIDDLE);
-                label.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
-                label.setLocationXY(x,y);
-                label.setFontSize(size);
-                label.setFontColor(color);
-                return label;
+    var label = panel.createLabel();
+    label.setText(name);
+    label.setVerticalAnchor(jsgl.VerticalAnchor.MIDDLE);
+    label.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
+    label.setLocationXY(x,y);
+    label.setFontSize(size);
+    label.setFontColor(color);
+    return label;
 }
 var parkDisplay;
 var driveDisplay;

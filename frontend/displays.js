@@ -9,7 +9,7 @@
 //oilP <.2 yellow <.1 red 0flash
 //low voltage indicator flash battery < 12
 //hold when waterT < 50 and lambda control is false
-
+//ird e car
 /**
  Effectively Abstract: provides a collection of dash visuals and a way to
  attach the information to them
@@ -45,11 +45,20 @@ var Display = function(){
                 rpm.visual.destroy();
                 rpm.visual = null;
             }
+            if(lambdactl.visual != null){
+                lambdactl.visual.destroy();
+                lambdactl.visual = null;
+            }
+            if(flc.visual != null){
+                flc.visual.destroy();
+                flc.visual = null;
+            }
         }
 
 
     }
 }
+
 //constructs visuals and connects the DashValues to them
 //MUST add visuals to visual array
 //Effectively abstract: must be defined in sub class
@@ -93,12 +102,14 @@ MinParkDisplay.prototype = Object.create(Display.prototype);
 MinParkDisplay.prototype.constructor = MinParkDisplay;
 
 MinParkDisplay.prototype.show = function(){
-    oilt.setVisual(new StatLabel(width/8,height/4,50,oilt.name, oilt.unit));
-    oilp.setVisual(new StatLabel(width/8,height/2,50,oilp.name,oilp.unit));
-    watert.setVisual(new StatLabel(7*width/8,height/4,50,watert.name, watert.unit));
-    volt.setVisual(new StatLabel(7*width/8,height/2,50,volt.name,volt.unit));
+    oilt.setVisual(new StatLabel(width/7,height/4,50,oilt.name, oilt.unit));
+    oilp.setVisual(new StatLabel(width/7,height/2,50,oilp.name,oilp.unit));
+    watert.setVisual(new StatLabel(6*width/7,height/4,50,watert.name, watert.unit));
+    volt.setVisual(new StatLabel(6*width/7,height/2,50,volt.name,volt.unit));
     rpm.setVisual(new RPMMeter(rpm.min,rpm.max,nominalColor,
     intermediateColor,maximalColor));
+    lambdactl.setVisual(new BooleanIndicator(width/2, height/4,50, lambdactl.name, lambdactl.unit));
+    flc.setVisual(new StatLabel(width/2, height/2,50, flc.name, flc.unit));
 }
 
 /**

@@ -260,6 +260,30 @@ function GearLabel(x,y){
 }
 
 /*
+Simple boolean Indicator (is it on or is it off?)
+*/
+function BooleanIndicator(x,y,size,name){
+    this.title = getDashLabel(name,x,y,size/2,textColor);
+    this.value = getDashLabel("TRUE",x,y+size * 4/5,size,textColor);
+    //this.value.setHorizontalAnchor(jsgl.HorizontalAnchor.RIGHT);
+    panel.addElement(this.title);
+    panel.addElement(this.value);
+
+    this.setValue = function(val){
+        if(val){
+            this.value.setText("TRUE");
+        }else{
+            this.value.setText("FALSE");
+        }
+    }
+
+    this.destroy = function(){
+        panel.removeElement(this.title);
+        panel.removeElement(this.value);
+    }
+}
+
+/*
 Changing label that represents any value.
 */
 function StatLabel(x,y,size,name,unit){
