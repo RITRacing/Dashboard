@@ -30,7 +30,7 @@ shift_id = 0x0610
 shift_hold_time = 0.2
 
 """ lock used to sync the message sent to the ECU"""
-shift_mutex = threading.Lock()
+shiftmsg_mutex = threading.Lock()
 
 """ CAN message indicating an upshift """
 upshift_msg = 0x02
@@ -78,7 +78,7 @@ shift_bounce_time = 200
 shift_wait = 50
 
 """ how long the driver must hold a paddle to initiate a shift """
-paddle_hold = 0.005
+paddle_hold = 0.15
 
 """ channel of CAN shield used """
 can_channel = 16
