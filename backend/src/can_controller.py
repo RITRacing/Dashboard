@@ -69,23 +69,23 @@ def set_flags(flagbyte):
         bit << 1
     if flagbyte:
         if bits[0]:
-            settings.car_status["LFAULT"] = "plug"
+            settings.car_status[settings.LFAULT] = "plug"
         if bits[1]:
-            settings.car_status["LFAULT"] = "intl"
+            settings.car_status[settings.LFAULT] = "intl"
         if bits[2]:
-            settings.car_status["LFAULT"] = "comm"
+            settings.car_status[settings.LFAULT] = "comm"
         if bits[3]:
-            settings.car_status["LFAULT"] = "cocurr"
+            settings.car_status[settings.LFAULT] = "cocurr"
         if bits[4]:
-            settings.car_status["LFAULT"] = "docurr"
+            settings.car_status[settings.LFAULT] = "docurr"
         if bits[5]:
-            settings.car_status["LFAULT"] = "temp"
+            settings.car_status[settings.LFAULT] = "temp"
         if bits[6]:
-            settings.car_status["LFAULT"] = "uvolt"
+            settings.car_status[settings.LFAULT] = "uvolt"
         if bits[7]:
-            settings.car_status["LFAULT"] = "ovolt"
+            settings.car_status[settings.LFAULT] = "ovolt"
     else:
-        settings.car_status["LFAULT"] = ""
+        settings.car_status[settings.LFAULT] = ""
 
 def read_input():
     """ read the incoming ECU data """
@@ -101,19 +101,19 @@ def read_input():
 
     # update settings.car_status
     if sender_id == settings.controller_id["ECU_IDprim"]:
-        settings.car_status["RPM"] = int((sender_data[0] << 8) + sender_data[1])
-        settings.car_status["OILT"] = int(sender_data[2])
-        settings.car_status["WATERT"] = int(sender_data[3])
-        settings.car_status["OILP"] = int(sender_data[4]) / 10
-        settings.car_status["GEAR"] = int(sender_data[5])
-        settings.car_status["SPEED"] = int(((sender_data[6] << 8) + sender_data[7]) / 100)
+        settings.car_status[settings.RPM] = int((sender_data[0] << 8) + sender_data[1])
+        settings.car_status[settings.OILT] = int(sender_data[2])
+        settings.car_status[settings.WATERT] = int(sender_data[3])
+        settings.car_status[settings.OILP] = int(sender_data[4]) / 10
+        settings.car_status[settings.GEAR] = int(sender_data[5])
+        settings.car_status[settings.SPEED] = int(((sender_data[6] << 8) + sender_data[7]) / 100)
     elif sender_id == settings.controller_id["ECU_IDsec"]:
-        settings.car_status["BATT"] = int((sender_data[0] << 8) + sender_data[1]) / 1000
-        settings.car_status["AIRT"] = int(sender_data[2] + sender_data[3])
+        settings.car_status[settings.BATT] = int((sender_data[0] << 8) + sender_data[1]) / 1000
+        settings.car_status[settings.AIRT] = int(sender_data[2] + sender_data[3])
     elif sender_id == settings.controller_id["ECar"]:
-        settings.car_status["SOC"] = int(sender_data[0])
+        settings.car_status[settings.SOC] = int(sender_data[0])
     elif sender_id == settings.controller_id["ECarSec"]:
-        settings.car_status["CURRENT"] = int((sender_data[0] << 8) | sender_data[1]);
+        settings.car_status[settings.CURRENT] = int((sender_data[0] << 8) | sender_data[1]);
     elif sender_id == settings.controller_id["EFlags"]:
         set_flags(int(sender_data[5]))
 
@@ -124,17 +124,17 @@ def read_fake_input(line):
     fields = line.split(',')
     identifier = fields[0]
     if identifier == "ECU_IDprim":
-        settings.car_status["RPM"] = int(fields[1])
-        settings.car_status["OILT"] = int(fields[2])
-        settings.car_status["WATERT"] = int(fields[3])
-        settings.car_status["OILP"] = float(fields[4])
-        settings.car_status["GEAR"] = int(fields[5])
-        settings.car_status["SPEED"] = float(fields[6])
+        settings.car_status[settings.RPM] = int(fields[1])
+        settings.car_status[settings.OILT] = int(fields[2])
+        settings.car_status[settings.WATERT] = int(fields[3])
+        settings.car_status[settings.OILP] = float(fields[4])
+        settings.car_status[settings.GEAR] = int(fields[5])
+        settings.car_status[settings.SPEED] = float(fields[6])
     elif identifier == "ECU_IDsec":
-        settings.car_status["BATT"] = float(fields[1])
-        settings.car_status["AIRT"] = int(fields[2])
+        settings.car_status[settings.BATT] = float(fields[1])
+        settings.car_status[settings.AIRT] = int(fields[2])
     elif identifier == "ECar":
-        settings.car_status["SOC"] = int(fields[1])
+        settings.car_status[settings.SOC] = int(fields[1])
     elif identifier == "wait":
         time.sleep(float(fields[1]))
 
@@ -151,3 +151,4 @@ def read_user_input():
         name = fields[0]
         value = ""
     settings.car_status[name] = value
+    print(settings.car_status)

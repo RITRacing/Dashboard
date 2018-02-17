@@ -9,7 +9,7 @@
 //oilP <.2 yellow <.1 red 0flash
 //low voltage indicator flash battery < 12
 //hold when waterT < 50 and lambda control is false
-//ird e car
+
 /**
  Effectively Abstract: provides a collection of dash visuals and a way to
  attach the information to them
@@ -20,58 +20,15 @@ var Display = function(){
     }else{
 
         //destroys all active visuals on hide
+
         this.hide = function(){
-            if(oilt.visual != null){
-                oilt.visual.destroy();
-                oilt.visual = null;
+        dashValues.forEach(function(element){
+            if(element.visual != null){
+                element.visual.destroy();
+                element.visual = null;
             }
-            if(oilp.visual != null){
-                oilp.visual.destroy();
-                oilp.visual = null;
-            }
-            if(watert.visual != null){
-                watert.visual.destroy();
-                watert.visual = null;
-            }
-            if(volt.visual != null){
-                volt.visual.destroy();
-                volt.visual = null;
-            }
-            if(gear.visual != null){
-                gear.visual.destroy();
-                gear.visual = null;
-            }
-            if(rpm.visual != null){
-                rpm.visual.destroy();
-                rpm.visual = null;
-            }
-            if(soc.visual != null){
-                soc.visual.destroy();
-                soc.visual = null;
-            }
-            if(lambdactl.visual != null){
-                lambdactl.visual.destroy();
-                lambdactl.visual = null;
-            }
-            if(flc.visual != null){
-                flc.visual.destroy();
-                flc.visual = null;
-            }
-            if(lfault.visual != null){
-                lfault.visual.destroy();
-                lfault.visual = null;
-            }
-            if(lfaulttext.visual != null){
-                lfaulttext.visual.destroy();
-                lfaulttext.visual = null;
-            }
-            if(current.visual != null){
-                current.visual.destroy();
-                current.visual = null;
-            }
-        }
-
-
+        });
+    }
     }
 }
 

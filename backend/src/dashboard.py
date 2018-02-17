@@ -55,14 +55,13 @@ def main():
         watchdog_thread.start()
         dash_log.print_msg("STARTUP", "watchdog started")
         dash_log.log_event(dash_log.LogType.WD_THREAD)
-
+    print("STARTING READ THREAD")
     input_thread = threading.Thread(target=read_can_input)
     input_thread.start()
-
+    print("STARTED READ THREAD")
     event_loop = asyncio.get_event_loop()
-    event_loop.run_until_complete(websockets.serve(dash_model.update_frontend, "localhost", settings.front_end_port))
+    event_loop.run_until_complete(websockets.serve(dash_model.update_frontend, "127.0.0.1", settings.front_end_port))
     event_loop.run_forever()
-
 def read_can_input():
     """ constantly get information for the frontend """
     if settings.debug:

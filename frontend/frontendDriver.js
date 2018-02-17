@@ -46,20 +46,33 @@ panel.addElement(background);
 
 //instantiate DashValues, but don't point them to visuals,
 //that is the job of the sub-classes
+var dashValues = [];
 var oilt = new DashValue("oilT", "℃", 20, 160);
+dashValues[dashValues.length] = oilt;
 var oilp = new DashValue("oilP", "bar", 0, 1.6);
+dashValues[dashValues.length] = oilp;
 var watert = new DashValue("waterT", "℃", 20, 140);
+dashValues[dashValues.length] = watert;
 var volt = new DashValue("volt", "V", 10.5, 14.5);
+dashValues[dashValues.length] = volt;
 var gear = new DashValue("GEAR", "", 0, 12);
 gear.update("N");
+dashValues[dashValues.length] = gear;
 var rpm = new DashValue("RPM", "", 0, 11500);
+dashValues[dashValues.length] = rpm;
 var soc = new DashValue("SOC", "%", 0, 100);
+dashValues[dashValues.length] = soc;
 var lambdactl = new DashValue("LAMDA CTL", "", 0, 1);
+dashValues[dashValues.length] = lambdactl;
 var flc = new DashValue("FLC", "", .5, 1.5);
+dashValues[dashValues.length] = flc;
 var lfaulttext = new DashValue("", "", 0, 1); // the text for the fault
 lfaulttext.update("");
+dashValues[dashValues.length] = lfaulttext;
 var lfault = new DashValue("", "", 0, 1); // the boolean fault indicator
+dashValues[dashValues.length] = lfault;
 var current = new DashValue("Current", "A", -32000, 32000);
+dashValues[dashValues.length] = current;
 
 // updates visuals based on data received
 // TODO - write code to receive lambdactl and flc messages
@@ -142,8 +155,7 @@ if(carType == 'c'){
 }
 
 currentDisplay.show();
-
-var datasocket = new WebSocket("ws:127.0.0.1:8765");
+var datasocket = new WebSocket("ws:127.0.0.1:8787");
 datasocket.onopen = function(event){
     datasocket.send("Dashboard Frontend");
 };
