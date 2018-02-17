@@ -80,8 +80,9 @@ class Shifter:
             self.current_bounce = dash_log.current_time()
         shift_mutex.release()
 shifter = Shifter()
-
+just_changed = False
 def try_shift():
+    global just_changed
     """
     initiated in new thread, looks at paddle positions and determines whether to
     1. upshift
@@ -95,9 +96,10 @@ def try_shift():
         time.sleep(2)
         up_on = GPIO.input(settings.upshift_listen_pin) == GPIO.LOW
         down_on = GPIO.input(settings.downshift_listen_pin) == GPIO.LOW
-        if up_on and down_on:
-            print("AUTO SOMETHING")
-
+        if up_on and down_on and not just_changed:
+            settings.auto_up_status = not settings.auto_up_status;
+            print("auto up is " + str(settings.auto_up_status))
+        just_changed = not just_changed
     elif up_on:
         print("UP!!")
         shifter.ask_for_shift(True)
@@ -119,3 +121,14 @@ GPIO.add_event_detect(settings.downshift_listen_pin, GPIO.FALLING, callback=padd
 
 GPIO.setup(settings.upshift_output_pin, GPIO.OUT)
 GPIO.setup(settings.downshift_output_pin, GPIO.OUT)
+
+def auto_up_routine():
+    while True:
+        time.sleep(.1)
+        if "RPM" in settings.car_status:
+            rpm = int(settings.car_status["RPM"])
+            if settings.auto_up_status and rpm >= 10500:
+                shifter.ask_for_shift(True)
+                time.sleep(.25)
+
+threading.Thread(target=auto_up_routine).start()

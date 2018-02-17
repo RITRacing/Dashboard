@@ -16,6 +16,8 @@ def update_frontend(websocket, path):
     rpm = 0
     gear = 0
     soc = 0
+    lfault = ""
+    current = 0;
 
     connection_name = yield from websocket.recv()
     dash_log.print_msg("STARTUP","connected to: " + connection_name)
@@ -42,18 +44,12 @@ def update_frontend(websocket, path):
         if "SOC" in settings.car_status and settings.car_status["SOC"] != soc:
             message["SOC"] = settings.car_status["SOC"]
             soc = settings.car_status["SOC"]
-        """
-        if packSOC.barName in settings.car_status and settings.car_status[packSOC.barName] != packSOC.value:
-            packSOC.updateBar(settings.car_status[packSOC.barName])
-
-        if packTemp.barName in settings.car_status and settings.car_status[packTemp.barName] != packTemp.value:
-            packTemp.updateBar(settings.car_status[packTemp.barName])
-
-        if "ANG_V" in settings.car_status:
-            if settings.car_status["ANG_V"] != prev_V:
-                messageList.append({"ANG_V": settings.car_status["ANG_V"]})
-                prev_V = settings.car_status["ANG_V"]
-        """
+        if "LFAULT" in settings.car_status and settings.car_status["LFAULT"] != lfault:
+            message["LFAULT"] = settings.car_status["LFAULT"]
+            lfault = settings.car_status["LFAULT"]
+        if "CURRENT" in settings.car_status and settings.car_status["CURRENT"] != current:
+            message["CURRENT"] = settings.car_status["CURRENT"]
+            current = settings.car_status["CURRENT"]
 
         if "GEAR" in settings.car_status:
             if settings.car_status["GEAR"] != gear:

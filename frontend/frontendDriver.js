@@ -46,16 +46,20 @@ panel.addElement(background);
 
 //instantiate DashValues, but don't point them to visuals,
 //that is the job of the sub-classes
-oilt = new DashValue("oilT", "℃", 20, 160);
-oilp = new DashValue("oilP", "bar", 0, 1.6);
-watert = new DashValue("waterT", "℃", 20, 140);
-volt = new DashValue("volt", "V", 10.5, 14.5);
-gear = new DashValue("GEAR", "", 0, 12);
+var oilt = new DashValue("oilT", "℃", 20, 160);
+var oilp = new DashValue("oilP", "bar", 0, 1.6);
+var watert = new DashValue("waterT", "℃", 20, 140);
+var volt = new DashValue("volt", "V", 10.5, 14.5);
+var gear = new DashValue("GEAR", "", 0, 12);
 gear.update("N");
-rpm = new DashValue("RPM", "", 0, 11500);
-soc = new DashValue("SOC", "%", 0, 100);
-lambdactl = new DashValue("LAMDA CTL", "", 0, 1);
-flc = new DashValue("FLC", "", .5, 1.5);
+var rpm = new DashValue("RPM", "", 0, 11500);
+var soc = new DashValue("SOC", "%", 0, 100);
+var lambdactl = new DashValue("LAMDA CTL", "", 0, 1);
+var flc = new DashValue("FLC", "", .5, 1.5);
+var lfaulttext = new DashValue("", "", 0, 1); // the text for the fault
+lfaulttext.update("");
+var lfault = new DashValue("", "", 0, 1); // the boolean fault indicator
+var current = new DashValue("Current", "A", -32000, 32000);
 
 // updates visuals based on data received
 // TODO - write code to receive lambdactl and flc messages
@@ -92,6 +96,26 @@ function updateData(data){
     if("SOC" in  data){
         soc.update(data["SOC"]);
     }
+    if("LFAULT" in data){
+        lfaulttext.update(data["LFAULT"]);
+        if(data["LFAULT"] === ""){
+            lfault.update(0);
+        }else{
+            lfault.update(1);
+        }
+    }
+    if("CURRENT" in data){
+        current.update(data["CURRENT"]);
+        if(current.value <= 0 && currentDisplay == driveDisplay){
+            driveDisplay.hide();
+            currentDisplay = parkDisplay;
+            parkDisplay.show();
+        }else if(current.value > 0 && currentDisplay == parkDisplay){
+            parkDisplay.hide();
+            currentDisplay = driveDisplay;
+            driveDisplay.show();
+        }
+    }
 }
 
 function getDashLabel(name, x, y, size, color){
@@ -112,7 +136,9 @@ if(carType == 'c'){
     driveDisplay = new DriveDisplay();
     currentDisplay = parkDisplay;
 }else{
-    currentDisplay = new EDisplay();
+    parkDisplay = new EParkDisplay();
+    driveDisplay = new EDriveDisplay();
+    currentDisplay = parkDisplay;
 }
 
 currentDisplay.show();

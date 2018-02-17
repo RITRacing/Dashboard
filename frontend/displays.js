@@ -53,6 +53,18 @@ var Display = function(){
                 flc.visual.destroy();
                 flc.visual = null;
             }
+            if(lfault.visual != null){
+                lfault.visual.destroy();
+                lfault.visual = null;
+            }
+            if(lfaulttext.visual != null){
+                lfaulttext.visual.destroy();
+                lfaulttext.visual = null;
+            }
+            if(current.visual != null){
+                current.visual.destroy();
+                current.visual = null;
+            }
         }
 
 
@@ -130,15 +142,37 @@ DriveDisplay.prototype.show = function(){
 }
 
 /**
-Shows all the time on E car, stuff like SOC, IRD, etc...
+Shows all the time on E car, stuff like SOC, IRD (current), etc...
 **/
-var EDisplay = function(){
+var EParkDisplay = function(){
     Display.apply(this);
 }
 
-EDisplay.prototype = Object.create(Display.prototype);
-EDisplay.prototype.constructor = EDisplay;
+EParkDisplay.prototype = Object.create(Display.prototype);
+EParkDisplay.prototype.constructor = EParkDisplay;
 
-EDisplay.prototype.show = function(){
-    soc.setVisual(new StatLabel(width/2,height/6,200,soc.name,soc.unit));
+EParkDisplay.prototype.show = function(){
+    soc.setVisual(new StatLabel(width/4,height/4,70,soc.name,soc.unit));
+    current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit));
+    lfaulttext.setVisual(new StatLabel(width - 10, 10, 35,
+        lfaulttext.name, lfaulttext.unit));
+    lfault.setVisual(new Indicator("", 3 * width/4, height/2, height/8,
+    lfault.min, lfault.max));
+}
+
+/**
+Omits the lfault text indicator for when driving
+**/
+var EDriveDisplay = function(){
+    Display.apply(this);
+}
+
+EDriveDisplay.prototype = Object.create(Display.prototype);
+EDriveDisplay.prototype.constructor = EDriveDisplay;
+
+EDriveDisplay.prototype.show = function(){
+    soc.setVisual(new StatLabel(width/4,height/4,70,soc.name,soc.unit));
+    current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit));
+    lfault.setVisual(new Indicator("", 3 * width/4, height/2, height/8,
+    lfault.min, lfault.max));
 }

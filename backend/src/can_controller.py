@@ -61,7 +61,31 @@ def output_shift():
         watchdog.update()
 
         time.sleep(settings.can_refresh_rate)
-
+def set_flags(flagbyte):
+    bits = [0,0,0,0,0,0,0]
+    bit = 1
+    for i in range(0,8):
+        bits[i] = flagbyte & bit
+        bit << 1
+    if flagbyte:
+        if bits[0]:
+            settings.car_status["LFAULT"] = "plug"
+        if bits[1]:
+            settings.car_status["LFAULT"] = "intl"
+        if bits[2]:
+            settings.car_status["LFAULT"] = "comm"
+        if bits[3]:
+            settings.car_status["LFAULT"] = "cocurr"
+        if bits[4]:
+            settings.car_status["LFAULT"] = "docurr"
+        if bits[5]:
+            settings.car_status["LFAULT"] = "temp"
+        if bits[6]:
+            settings.car_status["LFAULT"] = "uvolt"
+        if bits[7]:
+            settings.car_status["LFAULT"] = "ovolt"
+    else:
+        settings.car_status["LFAULT"] = ""
 
 def read_input():
     """ read the incoming ECU data """
@@ -87,7 +111,11 @@ def read_input():
         settings.car_status["BATT"] = int((sender_data[0] << 8) + sender_data[1]) / 1000
         settings.car_status["AIRT"] = int(sender_data[2] + sender_data[3])
     elif sender_id == settings.controller_id["ECar"]:
-        settings.car_status["SOC"] = int(sender_data[0]);
+        settings.car_status["SOC"] = int(sender_data[0])
+    elif sender_id == settings.controller_id["ECarSec"]:
+        settings.car_status["CURRENT"] = int((sender_data[0] << 8) | sender_data[1]);
+    elif sender_id == settings.controller_id["EFlags"]:
+        set_flags(int(sender_data[5]))
 
 
 def read_fake_input(line):
@@ -116,6 +144,10 @@ def read_user_input():
     """
     line = input("Enter <name> <value>: ")
     fields = line.split(" ")
-    name = fields[0]
-    value = fields[1]
+    if len(fields) == 2:
+        name = fields[0]
+        value = fields[1]
+    else:
+        name = fields[0]
+        value = ""
     settings.car_status[name] = value
