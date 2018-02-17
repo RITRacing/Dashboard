@@ -106,11 +106,11 @@ function updateData(data){
     }
     if("CURRENT" in data){
         current.update(data["CURRENT"]);
-        if(current.value <= 0 && currentDisplay == driveDisplay){
+        if(current.value <= 10 && currentDisplay == driveDisplay){
             driveDisplay.hide();
             currentDisplay = parkDisplay;
             parkDisplay.show();
-        }else if(current.value > 0 && currentDisplay == parkDisplay){
+        }else if(current.value > 10 && currentDisplay == parkDisplay){
             parkDisplay.hide();
             currentDisplay = driveDisplay;
             driveDisplay.show();

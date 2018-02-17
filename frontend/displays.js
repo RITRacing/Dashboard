@@ -45,6 +45,10 @@ var Display = function(){
                 rpm.visual.destroy();
                 rpm.visual = null;
             }
+            if(soc.visual != null){
+                soc.visual.destroy();
+                soc.visual = null;
+            }
             if(lambdactl.visual != null){
                 lambdactl.visual.destroy();
                 lambdactl.visual = null;
