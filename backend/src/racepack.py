@@ -97,14 +97,15 @@ def try_shift():
         up_on = GPIO.input(settings.upshift_listen_pin) == GPIO.LOW
         down_on = GPIO.input(settings.downshift_listen_pin) == GPIO.LOW
         if up_on and down_on and not just_changed:
-            settings.auto_up_status = not settings.auto_up_status;
+            settings.auto_up_status = not settings.auto_up_status
+            settings.car_status[settings.AUTOUP] = settings.auto_up_status
             print("auto up is " + str(settings.auto_up_status))
         just_changed = not just_changed
     elif up_on:
         print("UP!!")
-        shifter.ask_for_shift(True)
+        shifter.ask_for_shift(True) # ask for upshift
     elif down_on:
-        down_press = False
+        down_press = False # ask for downshift
         print("DOWN!!")
         shifter.ask_for_shift(False)
 

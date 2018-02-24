@@ -78,7 +78,9 @@ def read_can_input():
             can_controller.read_input()
 
         elif settings.debug == "user":
-            can_controller.read_user_input();
+            can_controller.read_user_input()
+        # this happens no matter which mode it is
+        settings.car_status[settings.AUTOUP] = settings.auto_up_status
 
 
 

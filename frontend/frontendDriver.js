@@ -73,7 +73,8 @@ var lfault = new DashValue("", "", 0, 1); // the boolean fault indicator
 dashValues[dashValues.length] = lfault;
 var current = new DashValue("Current", "A", -32000, 32000);
 dashValues[dashValues.length] = current;
-
+var autoup = new DashValue("Auto-Up", "", 0, 1);
+dashValues[dashValues.length] = autoup;
 // updates visuals based on data received
 // TODO - write code to receive lambdactl and flc messages
 function updateData(data){
@@ -128,6 +129,12 @@ function updateData(data){
             currentDisplay = driveDisplay;
             driveDisplay.show();
         }
+    }
+    if("AUTOUP" in data){
+        if(data["AUTOUP"])
+            autoup.update(1);
+        else
+            autoup.update(0);
     }
 }
 

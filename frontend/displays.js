@@ -81,8 +81,9 @@ MinParkDisplay.prototype.show = function(){
     volt.setVisual(new StatLabel(6*width/7,height/2,50,volt.name,volt.unit));
     rpm.setVisual(new RPMMeter(rpm.min,rpm.max,nominalColor,
     intermediateColor,maximalColor));
-    lambdactl.setVisual(new BooleanIndicator(width/2, height/4,50, lambdactl.name, lambdactl.unit));
+    lambdactl.setVisual(new BooleanIndicator(width/2, height/4,50, lambdactl.name, lambdactl.unit, false));
     flc.setVisual(new StatLabel(width/2, height/2,50, flc.name, flc.unit));
+    autoup.setVisual(new BooleanIndicator(width/7, 3*height/4, 65, autoup.name, false));
 }
 
 /**
@@ -100,6 +101,7 @@ DriveDisplay.prototype.show = function(){
     oilt.min, oilt.max));
     gear.setVisual(new GearLabel(width/4, height/2));
     rpm.setVisual(new IncrementalRPMMeter(9000,11500, 500, 10500, 10500, true));
+    autoup.setVisual(new BooleanIndicator(width/2, height/2, 75, autoup.name, true));
 }
 
 /**

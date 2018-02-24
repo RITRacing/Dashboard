@@ -16,6 +16,7 @@ AIRT = "AIRT"
 SOC = "SOC"
 CURRENT = "CURRENT"
 LFAULT = "LFAULT"
+AUTOUP = "AUTOUP"
 
 """ whether or not the vehicle will shift automatically """
 auto_up_status = False
@@ -103,7 +104,7 @@ front_end_port = 8787
 """ indicates if the pi is connected to the car, should use test data, or should use user input
     three values: car, test, user
 """
-debug = "test"
+debug = "user"
 
 """ determines whether or not there should be console output """
 console_output = True
