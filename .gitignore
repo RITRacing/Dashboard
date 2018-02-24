@@ -3,6 +3,5 @@ frontend/dash_bin
 frontend/package.nw
 backend/.DS_Store
 backend/.idea
-backend/tests
 backend/src/*.pyc
 backend/src/__pycache__
