@@ -76,6 +76,8 @@ var current = new DashValue("Current", "A", -32000, 32000);
 dashValues[dashValues.length] = current;
 var autoup = new DashValue("Auto-Up", "", 0, 1);
 dashValues[dashValues.length] = autoup;
+var hold = new DashValue("Hold", "", 0, 1);
+
 // updates visuals based on data received
 // TODO - write code to receive lambdactl and flc messages
 function updateData(data){
@@ -136,6 +138,23 @@ function updateData(data){
             autoup.update(1);
         else
             autoup.update(0);
+    }
+
+    if("LAMBDACTL" in data){
+        if(data["LAMBDACTL"])
+            lambdactl.update(1);
+        else {
+            lambdactl.update(0);
+        }
+    }
+    if("FLC" in data){
+        flc.update(data["FLC"]);
+    }
+
+    if(watert.value < 50 || lambdactl.value == 0){
+        hold.update(1);
+    }else{
+        hold.update(0);
     }
 }
 

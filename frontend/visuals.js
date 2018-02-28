@@ -23,7 +23,7 @@ function DashValue(name, unit, min, max){
        if(this.visual != null){
            this.visual.setValue(newVal);
        }
-    }
+   }
 }
 
 //visual that shows a changing bar
@@ -262,9 +262,10 @@ function GearLabel(x,y){
 /*
 Simple boolean Indicator (is it on or is it off?)
 */
-function BooleanIndicator(x,y,size,name,disappears){
-    this.title = getDashLabel(name,x,y,size/2,textColor);
-    this.value = getDashLabel("TRUE",x,y+size * 4/5,size,textColor);
+function BooleanIndicator(x,y,size,name,disappears, color){
+    this.color = color
+    this.title = getDashLabel(name,x,y,size/2,color);
+    this.value = getDashLabel("TRUE",x,y+size * 4/5,size,color);
     if(disappears) this.value.setFontColor(backgroundColor);
     //this.value.setHorizontalAnchor(jsgl.HorizontalAnchor.RIGHT);
     panel.addElement(this.title);
@@ -273,7 +274,7 @@ function BooleanIndicator(x,y,size,name,disappears){
     this.setValue = function(val){
         if(this.disappears){
             if(val)
-                this.title.setFontColor(textColor);
+                this.title.setFontColor(this.color);
             else
                 this.title.setFontColor(backgroundColor);
         }else{
@@ -293,11 +294,11 @@ function BooleanIndicator(x,y,size,name,disappears){
 /*
 Changing label that represents any value.
 */
-function StatLabel(x,y,size,name,unit){
-    this.title = getDashLabel(name,x,y,size/2,textColor);
-    this.value = getDashLabel("wait",x,y+size * 4/5,size,textColor);
+function StatLabel(x,y,size,name,unit,color){
+    this.title = getDashLabel(name,x,y,size/2,color);
+    this.value = getDashLabel("wait",x,y+size * 4/5,size,color);
     this.value.setHorizontalAnchor(jsgl.HorizontalAnchor.RIGHT);
-    this.suffix = getDashLabel(unit,x+size * 2/5,y+size * 4/5,size/2,textColor);
+    this.suffix = getDashLabel(unit,x+size * 2/5,y+size * 4/5,size/2,color);
 
     panel.addElement(this.title);
     panel.addElement(this.value);

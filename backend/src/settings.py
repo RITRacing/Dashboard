@@ -17,6 +17,7 @@ SOC = "SOC"
 CURRENT = "CURRENT"
 LFAULT = "LFAULT"
 AUTOUP = "AUTOUP"
+LAMBDACTL = "LAMBDACTL"
 
 """ whether or not the vehicle will shift automatically """
 auto_up_status = False

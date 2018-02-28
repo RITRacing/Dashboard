@@ -7,7 +7,9 @@
 
 //waterT yellow=120 red=130 flash=135
 //oilP <.2 yellow <.1 red 0flash
+
 //low voltage indicator flash battery < 12
+
 //hold when waterT < 50 and lambda control is false
 
 /**
@@ -75,15 +77,16 @@ MinParkDisplay.prototype = Object.create(Display.prototype);
 MinParkDisplay.prototype.constructor = MinParkDisplay;
 
 MinParkDisplay.prototype.show = function(){
-    oilt.setVisual(new StatLabel(width/7,height/4,50,oilt.name, oilt.unit));
-    oilp.setVisual(new StatLabel(width/7,height/2,50,oilp.name,oilp.unit));
-    watert.setVisual(new StatLabel(6*width/7,height/4,50,watert.name, watert.unit));
-    volt.setVisual(new StatLabel(6*width/7,height/2,50,volt.name,volt.unit));
+    oilt.setVisual(new StatLabel(width/7,height/4,50,oilt.name, oilt.unit,textColor));
+    oilp.setVisual(new StatLabel(width/7,height/2,50,oilp.name,oilp.unit,textColor));
+    watert.setVisual(new StatLabel(6*width/7,height/4,50,watert.name, watert.unit,textColor));
+    volt.setVisual(new StatLabel(6*width/7,height/2,50,volt.name,volt.unit,textColor));
     rpm.setVisual(new RPMMeter(rpm.min,rpm.max,nominalColor,
     intermediateColor,maximalColor));
-    lambdactl.setVisual(new BooleanIndicator(width/2, height/4,50, lambdactl.name, lambdactl.unit, false));
-    flc.setVisual(new StatLabel(width/2, height/2,50, flc.name, flc.unit));
-    autoup.setVisual(new BooleanIndicator(width/7, 3*height/4, 65, autoup.name, false));
+    lambdactl.setVisual(new BooleanIndicator(width/2, height/4,50, lambdactl.name, false, textColor));
+    flc.setVisual(new StatLabel(width/2, height/2,50, flc.name, flc.unit,textColor));
+    autoup.setVisual(new BooleanIndicator(width/7, 3*height/4, 65, autoup.name, false, "red"));
+    hold.setVisual(new BooleanIndicator(6*width/7,3*height/4,65,hold.name,true,"yellow"));
 }
 
 /**
@@ -101,7 +104,7 @@ DriveDisplay.prototype.show = function(){
     oilt.min, oilt.max));
     gear.setVisual(new GearLabel(width/4, height/2));
     rpm.setVisual(new IncrementalRPMMeter(9000,11500, 500, 10500, 10500, true));
-    autoup.setVisual(new BooleanIndicator(width/2, height/2, 75, autoup.name, true));
+    autoup.setVisual(new BooleanIndicator(width/2, height/2, 75, autoup.name, true, textColor));
 }
 
 /**
@@ -115,10 +118,10 @@ EParkDisplay.prototype = Object.create(Display.prototype);
 EParkDisplay.prototype.constructor = EParkDisplay;
 
 EParkDisplay.prototype.show = function(){
-    soc.setVisual(new StatLabel(width/4,height/4,70,soc.name,soc.unit));
-    current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit));
+    soc.setVisual(new StatLabel(width/4,height/4,70,soc.name,soc.unit,textColor));
+    current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit,textColor));
     lfaulttext.setVisual(new StatLabel(width - 10, 10, 35,
-        lfaulttext.name, lfaulttext.unit));
+        lfaulttext.name, lfaulttext.unit,textColor));
     lfault.setVisual(new Indicator("", 3 * width/4, height/2, height/8,
     lfault.min, lfault.max));
 }
@@ -134,8 +137,8 @@ EDriveDisplay.prototype = Object.create(Display.prototype);
 EDriveDisplay.prototype.constructor = EDriveDisplay;
 
 EDriveDisplay.prototype.show = function(){
-    soc.setVisual(new StatLabel(width/4,height/4,70,soc.name,soc.unit));
-    current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit));
+    soc.setVisual(new StatLabel(width/4,height/4,70,soc.name,soc.unit,textColor));
+    current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit,textColor));
     lfault.setVisual(new Indicator("", 3 * width/4, height/2, height/8,
     lfault.min, lfault.max));
 }
