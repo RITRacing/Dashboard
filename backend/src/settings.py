@@ -109,6 +109,8 @@ debug = "user"
 """ determines whether or not there should be console output """
 console_output = True
 
+""" how long the backend waits """
+read_wait = 0.01
 
 def clean_shutdown(signal, frame):
     """ closes resources and shuts down the program, caused by an error """

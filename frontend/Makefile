@@ -1,6 +1,6 @@
 all: dash_bin 
 
-package.nw : index.html frontendDriver.js displays.js visuals.js package.json dep/jsgl.min.js resources/ritracing.png
+package.nw : index.html frontendDriver.js displays.js visuals.js package.json dep/jsgl.min.js resources/ecar.png resources/ccar.png
 	zip package.nw $^
 
 dash_bin : package.nw

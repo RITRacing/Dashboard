@@ -16,6 +16,7 @@ import threading
 import sys
 import websockets
 import asyncio
+import time
 """
 -Takes information from the ECU and passes it to the front end
 -Listens for driver paddle presses and initiates shifts
@@ -28,7 +29,7 @@ def main():
     # setup the shutdown hook
     signal.signal(signal.SIGINT, settings.clean_shutdown)
 
-    if not settings.debug:
+    if settings.debug == "car":
         #connect to CAN shield
         can_controller.setup_can()
         dash_log.print_msg("STARTUP", "connected to can interface")
@@ -64,7 +65,7 @@ def main():
     event_loop.run_forever()
 def read_can_input():
     """ constantly get information for the frontend """
-    if settings.debug:
+    if settings.debug != "car":
         dash_log.print_msg("STARTUP", "reading test data")
     else:
         dash_log.print_msg("STARTUP", "reading CAN")
@@ -81,6 +82,7 @@ def read_can_input():
             can_controller.read_user_input()
         # this happens no matter which mode it is
         settings.car_status[settings.AUTOUP] = settings.auto_up_status
+        time.sleep(settings.read_wait)
 
 
 

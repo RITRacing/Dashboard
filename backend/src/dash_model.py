@@ -19,7 +19,7 @@ def update_frontend(websocket, path):
     last_values[settings.BATT] = 0
     last_values[settings.AIRT] = 0
     last_values[settings.SOC] = 0
-    last_values[settings.CURRENT] = 0
+    last_values[settings.CURRENT] = -32000
     last_values[settings.LFAULT] = ""
     last_values[settings.AUTOUP] = 0
     connection_name = yield from websocket.recv()

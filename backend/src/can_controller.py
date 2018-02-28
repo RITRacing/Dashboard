@@ -62,11 +62,11 @@ def output_shift():
 
         time.sleep(settings.can_refresh_rate)
 def set_flags(flagbyte):
-    bits = [0,0,0,0,0,0,0]
+    bits = [0,0,0,0,0,0,0,0]
     bit = 1
     for i in range(0,8):
         bits[i] = flagbyte & bit
-        bit << 1
+        bit = bit << 1
     if flagbyte:
         if bits[0]:
             settings.car_status[settings.LFAULT] = "plug"
@@ -113,7 +113,7 @@ def read_input():
     elif sender_id == settings.controller_id["ECar"]:
         settings.car_status[settings.SOC] = int(sender_data[0])
     elif sender_id == settings.controller_id["ECarSec"]:
-        settings.car_status[settings.CURRENT] = int((sender_data[0] << 8) | sender_data[1]);
+        settings.car_status[settings.CURRENT] = int((sender_data[0] << 8) + sender_data[1]);
     elif sender_id == settings.controller_id["EFlags"]:
         set_flags(int(sender_data[5]))
 

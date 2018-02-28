@@ -5,13 +5,14 @@ var settings = JSON.parse(contents);
 //set some variables using the information in settings.json
 var width = settings.display_width;
 var height = settings.display_height;
-var logoURL = settings.logoURL;
 var backgroundColor = settings.background;
 var coolColor = settings.cool;
 var nominalColor = settings.nominal;
 var intermediateColor = settings.intermediate;
 var maximalColor = settings.maximal;
 var carType = settings.car_type;
+
+var logoURL = "/home/dash/f26dash/frontend/resources/" + carType + "car.png";
 
 //create the panel (acts as a canvas; consolidates all elements)
 panel = new jsgl.Panel(document.getElementById("panel"));
@@ -27,7 +28,7 @@ logo.setUrl(logoURL);
 logo.setVerticalAnchor(jsgl.VerticalAnchor.MIDDLE); //the anchors set where (0,0) is on the shape/image/whatever
 logo.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
 logo.setLocationXY(width/2,height - 90);
-logo.setWidth(100);
+logo.setWidth(244);
 logo.setHeight(80);
 logo.setZIndex(20);
 panel.addElement(logo);
