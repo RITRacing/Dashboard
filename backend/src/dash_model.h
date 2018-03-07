@@ -7,7 +7,7 @@ using namespace std;
 
 class dash_model{
 public:
-    dash_model(string ip, int port); // connect to frontend
+    dash_model(int port); // connect to frontend
     void set(string key, string value); // set a value in status
     void update_frontend(); // send a json rep. of status to frontend
 private:

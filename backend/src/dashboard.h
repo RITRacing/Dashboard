@@ -4,8 +4,7 @@
 #include <string>
 using namespace std;
 
-string usage_string = "Usage: ./dashboard -m <op_mode>\n"
-			"-f <testfile> (if op_mode testdata)\n";
+#define USAGE_STRING "Usage: ./dashboard -m <op_mode>\n -f <testfile> (if op_mode testdata)\n";
 
 // enum for different modes of operation
 enum op_mode{

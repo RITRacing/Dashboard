@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 #include <netinet/in.h>
+#include <cstdio>
+#include <cstdlib>
 
 using namespace std;
 
@@ -14,7 +16,6 @@ using namespace std;
 dash_model::dash_model(int port){
     // do a bunch of low level socket stuff
 
-    char* address = "127.0.0.1";
     int fd;
     int opt = 1;
     if(!(fd = socket(AF_INET, SOCK_STREAM, 0))){
@@ -23,7 +24,7 @@ dash_model::dash_model(int port){
     }
 
     if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-        &opt, sizof(opt))){
+        &opt, sizeof(opt))){
             perror("Socket initialization failed");
             exit(EXIT_FAILURE);
     }
@@ -44,8 +45,8 @@ dash_model::dash_model(int port){
 
     // now wait for frontend to connect
     int addrlen = sizeof(address);
-    if((frontfd = accept(fd, (struct sockaddr*)address, (socklen_t*)&addrlen)) < 0){
-        error("failed to connect to frontend");
+    if((frontfd = accept(fd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) < 0){
+        perror("failed to connect to frontend");
         exit(EXIT_FAILURE);
     }
 }
@@ -65,15 +66,15 @@ void dash_model::set(string key, string value){
 * @param m: the map
 **/
 string dash_model::json_from_map(map<string,string> m){
-    stringstream ss("{");
-    map<string, string> iterator itr;
+    ostringstream ss("{");
+    map<string, string>::iterator itr;
     for(itr = m.begin(); itr != m.end(); ++itr){
         string key = itr->first;
         string value = itr->second;
-        if(itr != m.begin()) ',' >> ss;
-        '\"' >> key >> '\":\"' >> value >> '\"' >> ss;
+        if(itr != m.begin()) ss<<',';
+        ss << '\"' << key << "\":\"" << value << '\"';
     }
-    '}' >> ss;
+    ss << '}';
     return ss.str();
 }
 
@@ -81,7 +82,7 @@ string dash_model::json_from_map(map<string,string> m){
 * Send the data in outgoing to frontend in json format
 **/
 void dash_model::update_frontend(){
-    char* json = json_from_map(outgoing).c_str();
+    const char* json = json_from_map(outgoing).c_str();
     outgoing.clear();
-    send(fd, json, sizeof(json), 0);
+    send(frontfd, json, sizeof(json), 0);
 }
