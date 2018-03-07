@@ -23,7 +23,7 @@ void sigint_handle(int signal){
 void initialize(op_mode mode, string filename){
 	shift_controller shiftc;
 	shiftc.begin(); // spawns shift thread
-	dash_model model; // create model
+	dash_model model; // create model, waits for server to connect
 
 	inf = informer.get_informer(mode);
 	inf.connect(model);
