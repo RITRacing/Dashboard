@@ -3,6 +3,7 @@
 
 #include <string>
 using namespace std;
+
 string usage_string = "Usage: ./dashboard -m <op_mode>\n"
 			"-f <testfile> (if op_mode testdata)\n";
 
@@ -13,5 +14,30 @@ enum op_mode{
 	user // reading from stdin
 };
 
-#endif
+/**
+* The following are keys for values stored in the JSON
+* the frontend expects
+**/
 
+// c car
+#define RPM "RPM"
+#define OILT "OILT"
+#define WATERT "WATERT"
+#define OILP "OILP"
+#define GEAR "GEAR"
+#define SPEED "SPEED"
+#define BATT "BATT"
+#define AIRT "AIRT"
+#define AUTOUP "AUTOUP"
+#define LAMBDACTL "LAMBDACTL"
+
+// e car
+#define CURRENT "CURRENT"
+#define LFAULT "LFAULT"
+#define SOC "SOC"
+
+
+
+
+
+#endif
