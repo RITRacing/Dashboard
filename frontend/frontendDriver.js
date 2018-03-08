@@ -1,4 +1,5 @@
 var fs = require("fs");
+var net = require("net");
 var contents = fs.readFileSync("/home/dash/f26dash/frontend/settings.json");
 var settings = JSON.parse(contents);
 
@@ -141,7 +142,7 @@ function updateData(data){
     }
 
     if("LAMBDACTL" in data){
-        if(data["LAMBDACTL"])
+        if(data["LAMBDACTL"] === "true")
             lambdactl.update(1);
         else {
             lambdactl.update(0);
@@ -182,6 +183,8 @@ if(carType == 'c'){
 }
 
 currentDisplay.show();
+var client = new net.Socket();
+/*
 var datasocket = new WebSocket("ws:127.0.0.1:8787");
 datasocket.onopen = function(event){
     datasocket.send("Dashboard Frontend");
@@ -191,3 +194,12 @@ datasocket.onmessage = function(event){
     var data = JSON.parse(event.data);
     updateData(data);
 };
+*/
+client.connect(8787, "127.0.0.1", function(){
+	client.write("hello from server");
+});
+
+client.on('data', function(evt){
+	var jdata = JSON.parse(evt);
+	updateData(jdata);
+});

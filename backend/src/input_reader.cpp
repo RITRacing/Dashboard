@@ -2,12 +2,16 @@
 #include "dash_model.h"
 #include <iostream>
 #include <cstring>
+#include <stdio.h>
+#include <string>
+
+using namespace std;
+
 void input_reader::gather(){
     cout << "Enter <key> <value>";
     string in;
-    cin >> in;
-    char * c = strdup(in.c_str());
-    string key = string(strtok(c, " "));
-    string value = c;
+    getline(cin, in);
+    string key = in.substr(0, in.find(" "));
+    string value = in.substr(in.find(" ") + 1, in.size());
     model->set(key, value);
 }

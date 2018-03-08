@@ -1,11 +1,13 @@
 #include "dash_model.h"
 #include "dashboard.h"
 #include <map>
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <netinet/in.h>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 using namespace std;
 
@@ -66,15 +68,18 @@ void dash_model::set(string key, string value){
 * @param m: the map
 **/
 string dash_model::json_from_map(map<string,string> m){
-    ostringstream ss("{");
+    ostringstream ss;
     map<string, string>::iterator itr;
-    for(itr = m.begin(); itr != m.end(); ++itr){
-        string key = itr->first;
-        string value = itr->second;
-        if(itr != m.begin()) ss<<',';
-        ss << '\"' << key << "\":\"" << value << '\"';
+    if(m.size() != 0){
+        for(itr = m.begin(); itr != m.end(); ++itr){
+            string key = itr->first;
+            string value = itr->second;
+            if(itr != m.begin()) ss<<',';
+            ss << "{\"" << key << "\":\"" << value << '\"';
+        }
+        ss << '}';
     }
-    ss << '}';
+    cout << ss.str() << endl;
     return ss.str();
 }
 
@@ -84,5 +89,5 @@ string dash_model::json_from_map(map<string,string> m){
 void dash_model::update_frontend(){
     const char* json = json_from_map(outgoing).c_str();
     outgoing.clear();
-    send(frontfd, json, sizeof(json), 0);
+    send(frontfd, json, strlen(json), 0);
 }

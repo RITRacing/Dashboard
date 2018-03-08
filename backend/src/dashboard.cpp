@@ -69,5 +69,5 @@ int main(int argc, char** argv){
 	}
 
 	initialize(mode, filename);
-    	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
