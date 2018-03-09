@@ -1,17 +1,3 @@
-//9000-11000
-//flash and red at 10500
-//flash whole screen black and white at 11000
-
-//lambda control boolean
-//flc number 1.500-.500
-
-//waterT yellow=120 red=130 flash=135
-//oilP <.2 yellow <.1 red 0flash
-
-//low voltage indicator flash battery < 12
-
-//hold when waterT < 50 and lambda control is false
-
 /**
  Effectively Abstract: provides a collection of dash visuals and a way to
  attach the information to them
@@ -85,8 +71,8 @@ MinParkDisplay.prototype.show = function(){
     intermediateColor,maximalColor));
     lambdactl.setVisual(new BooleanIndicator(width/2, height/4,50, lambdactl.name, false, textColor));
     flc.setVisual(new StatLabel(width/2, height/2,50, flc.name, flc.unit,textColor));
-    autoup.setVisual(new BooleanIndicator(width/7, 3*height/4, 65, autoup.name, false, "red"));
-    hold.setVisual(new BooleanIndicator(6*width/7,3*height/4,65,hold.name,true,"yellow"));
+    autoup.setVisual(new BooleanIndicator(width/7+20, 3*height/4 + 50, 115, autoup.name, true, "red"));
+    hold.setVisual(new BooleanIndicator(6*width/7-20,3*height/4 + 50,150,hold.name,true,"yellow"));
 }
 
 /**
@@ -100,11 +86,12 @@ DriveDisplay.prototype = Object.create(Display.prototype);
 DriveDisplay.prototype.constructor = DriveDisplay;
 
 DriveDisplay.prototype.show = function(){
-    oilt.setVisual(new Indicator("CEL",width - width/4,height/2,height/8,
-    oilt.min, oilt.max));
+    cel.setVisual(new Indicator(cel.name,width - width/4,height/2,height/8,
+    cel.min, cel.max));
     gear.setVisual(new GearLabel(width/4, height/2));
     rpm.setVisual(new IncrementalRPMMeter(9000,11500, 500, 10500, 10500, true));
-    autoup.setVisual(new BooleanIndicator(width/2, height/2, 75, autoup.name, true, textColor));
+    autoup.setVisual(new BooleanIndicator(width/2, height/2, 100, autoup.name, true, "red"));
+    volt.setVisual(new BatteryIndicator(width/2, height/2 - 100, 12, "yellow"));
 }
 
 /**

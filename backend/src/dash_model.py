@@ -37,5 +37,6 @@ def update_frontend(websocket, path):
         if settings.GEAR in message:
             if message[settings.GEAR] == 0:
                 message[settings.GEAR] = "N"
+        print(json.dumps(message));
         yield from websocket.send(json.dumps(message))
         message = {}

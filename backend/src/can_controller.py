@@ -113,7 +113,7 @@ def read_input():
     elif sender_id == settings.controller_id["ECar"]:
         settings.car_status[settings.SOC] = int(sender_data[0])
     elif sender_id == settings.controller_id["ECarSec"]:
-        settings.car_status[settings.CURRENT] = int((sender_data[0] << 8) + sender_data[1]);
+        settings.car_status[settings.CURRENT] = int((sender_data[0] << 8) | sender_data[1]);
     elif sender_id == settings.controller_id["EFlags"]:
         set_flags(int(sender_data[5]))
 

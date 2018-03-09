@@ -319,7 +319,7 @@ function StatLabel(x,y,size,name,unit,color){
 Circle that represents a value using a color.
 */
 function Indicator(name,x,y,radius,min,max){
-    this.label = getDashLabel(name, x, y + radius + 50, 20, textColor);
+    this.label = getDashLabel(name, x, y + radius + 50, 70, textColor);
     panel.addElement(this.label);
     var circle = panel.createCircle();
     circle.setRadius(radius);
@@ -356,12 +356,15 @@ function Indicator(name,x,y,radius,min,max){
     this.setValue = function(val){
         var range = this.max - this.min;
         var testval = val - this.min;
-        if(testval/range <= 1/2){
-            if(this.animator.isPlaying())this.animator.pause();
-            circle.getFill().setColor(coolColor);
-        }else if(testval/range <= 3/4){
+        if(testval/range <= 1/4){
             if(this.animator.isPlaying())this.animator.pause();
             circle.getFill().setColor(nominalColor);
+        }else if(testval/range <= 1/2){
+            if(this.animator.isPlaying())this.animator.pause();
+            circle.getFill().setColor(intermediateColor);
+        }else if(testval/range <= 3/4){
+            if(this.animator.isPlaying())this.animator.pause();
+            circle.getFill().setColor(maximalColor);
         }else{
 
             if(!this.animator.isPlaying())this.animator.play();
@@ -372,5 +375,52 @@ function Indicator(name,x,y,radius,min,max){
     this.destroy = function(){
         panel.removeElement(this.label);
         panel.removeElement(circle);
+    }
+
+    // used to indicate whether watert or oilp broken
+    this.setText = function(text){
+        this.label.setText(text);
+    }
+}
+
+/**
+Boolean Battery Indicator
+**/
+function BatteryIndicator(x,y,indicationVal,color){
+    this.indicationVal = indicationVal; // the value it shows up at
+    this.color = color
+    this.bodyRect = panel.createRectangle();
+    this.bodyRect.setWidth(80);
+    this.bodyRect.setHeight(50);
+    this.bodyRect.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
+    this.bodyRect.setVerticalAnchor(jsgl.VerticalAnchor.MIDDLE);
+    this.bodyRect.setLocationXY(x, y);
+    this.bodyRect.getFill().setColor(color);
+
+    this.termRect = panel.createRectangle();
+    this.termRect.setWidth(20);
+    this.termRect.setHeight(20);
+    this.termRect.setHorizontalAnchor(jsgl.HorizontalAnchor.CENTER);
+    this.termRect.setVerticalAnchor(jsgl.VerticalAnchor.MIDDLE);
+    this.termRect.setLocationXY(x + 40, y);
+    this.termRect.getFill().setColor(color);
+
+    panel.addElement(this.termRect);
+    panel.addElement(this.bodyRect);
+
+    this.setValue = function(val){
+        if(val < indicationVal){
+            this.bodyRect.getFill().setColor(color);
+            this.termRect.getFill().setColor(color);
+        }else{
+            this.bodyRect.getFill().setColor(backgroundColor);
+            this.termRect.getFill().setColor(backgroundColor);
+        }
+
+    }
+
+    this.destroy = function(){
+        panel.removeElement(this.bodyRect);
+        panel.removeElement(this.termRect);
     }
 }

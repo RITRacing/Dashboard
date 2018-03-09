@@ -1,4 +1,5 @@
 var fs = require("fs");
+var net = require("net");
 var contents = fs.readFileSync("/home/dash/f26dash/frontend/settings.json");
 var settings = JSON.parse(contents);
 
@@ -63,7 +64,7 @@ var rpm = new DashValue("RPM", "", 0, 11500);
 dashValues[dashValues.length] = rpm;
 var soc = new DashValue("SOC", "%", 0, 100);
 dashValues[dashValues.length] = soc;
-var lambdactl = new DashValue("LAMDA CTL", "", 0, 1);
+var lambdactl = new DashValue("LAMBDA CTL", "", 0, 1);
 dashValues[dashValues.length] = lambdactl;
 var flc = new DashValue("FLC", "", .5, 1.5);
 dashValues[dashValues.length] = flc;
@@ -77,7 +78,7 @@ dashValues[dashValues.length] = current;
 var autoup = new DashValue("Auto-Up", "", 0, 1);
 dashValues[dashValues.length] = autoup;
 var hold = new DashValue("Hold", "", 0, 1);
-
+dashValues[dashValues.length] = hold;
 // updates visuals based on data received
 // TODO - write code to receive lambdactl and flc messages
 function updateData(data){
@@ -140,14 +141,16 @@ function updateData(data){
             autoup.update(0);
     }
 
-    if("LAMBDACTL" in data){
-        if(data["LAMBDACTL"])
+    if("lctl" in data){
+        console.log("LAMBDACTL in data!");
+        if(data["lctl"])
             lambdactl.update(1);
         else {
             lambdactl.update(0);
         }
     }
     if("FLC" in data){
+        console.log("FLC in data!");
         flc.update(data["FLC"]);
     }
 
@@ -182,6 +185,8 @@ if(carType == 'c'){
 }
 
 currentDisplay.show();
+var client = new net.Socket();
+/*
 var datasocket = new WebSocket("ws:127.0.0.1:8787");
 datasocket.onopen = function(event){
     datasocket.send("Dashboard Frontend");
@@ -191,3 +196,12 @@ datasocket.onmessage = function(event){
     var data = JSON.parse(event.data);
     updateData(data);
 };
+*/
+client.connect(8787, "127.0.0.1", function(){
+	client.write("hello from server");
+});
+
+client.on('data', function(evt){
+	var jdata = JSON.parse(evt);
+	updateData(jdata);
+});
