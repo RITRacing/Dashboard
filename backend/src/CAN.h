@@ -7,10 +7,9 @@ class CAN{
 		void write_msg(char * msg);
 	private:
 		int sockfd;
-		
+
 
 };
 
 
 #endif
-
