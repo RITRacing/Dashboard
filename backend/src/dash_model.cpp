@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <netinet/tcp.h>
 
 using namespace std;
 
@@ -24,8 +25,8 @@ dash_model::dash_model(int port){
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
-
-    if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+    // SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT
+    if(setsockopt(fd, IPPROTO_TCP,TCP_NODELAY,
         &opt, sizeof(opt))){
             perror("Socket initialization failed");
             exit(EXIT_FAILURE);
@@ -51,6 +52,11 @@ dash_model::dash_model(int port){
         perror("failed to connect to frontend");
         exit(EXIT_FAILURE);
     }
+    if(setsockopt(frontfd, IPPROTO_TCP,TCP_NODELAY,
+        &opt, sizeof(opt))){
+            perror("Frontend Socket initialization failed");
+            exit(EXIT_FAILURE);
+    }
 }
 
 /**
@@ -70,16 +76,16 @@ void dash_model::set(string key, string value){
 string dash_model::json_from_map(map<string,string> m){
     ostringstream ss;
     map<string, string>::iterator itr;
+    ss << "{";
     if(m.size() != 0){
         for(itr = m.begin(); itr != m.end(); ++itr){
             string key = itr->first;
             string value = itr->second;
             if(itr != m.begin()) ss<<',';
-            ss << "{\"" << key << "\":\"" << value << '\"';
+            ss << "\"" << key << "\":\"" << value << '\"';
         }
-        ss << '}';
+        ss << "}@";
     }
-    cout << ss.str() << endl;
     return ss.str();
 }
 
@@ -87,7 +93,8 @@ string dash_model::json_from_map(map<string,string> m){
 * Send the data in outgoing to frontend in json format
 **/
 void dash_model::update_frontend(){
-    const char* json = json_from_map(outgoing).c_str();
+    string jstring = json_from_map(outgoing);
+    const char * json = jstring.c_str();
+    send(frontfd, json, strlen(json),0);
     outgoing.clear();
-    send(frontfd, json, strlen(json), 0);
 }

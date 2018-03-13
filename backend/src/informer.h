@@ -2,6 +2,8 @@
 #define INFORMER_H
 #include "dashboard.h"
 #include "dash_model.h"
+#include "CAN.h"
+
 class informer{
 public:
     static informer * get_informer(op_mode mode, string filename);
@@ -21,6 +23,13 @@ private:
 class input_reader: public informer{
 private:
     void gather();
+};
+
+class can_reader: public informer{
+private:
+    void gather();
+    void set_flags(uint8_t flagbyte);
+    CAN can;
 };
 
 #endif

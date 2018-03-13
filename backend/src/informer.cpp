@@ -5,7 +5,8 @@ using namespace std;
 
 informer * informer::get_informer(op_mode mode, string filename){
     switch(mode){
-        case vehicle: //TODO
+        case vehicle:
+            return new can_reader();
         case testdata: //TODO
         case user:
             return new input_reader();

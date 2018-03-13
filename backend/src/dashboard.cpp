@@ -24,7 +24,7 @@ void sigint_handle(int signal){
 void initialize(op_mode mode, string filename){
 	//shift_controller shiftc;
 	//shiftc.begin(); // spawns shift thread
-	dash_model model(8787); // create model, waits for server to connect
+	dash_model model(PORT); // create model, waits for server to connect
 
 	inf = informer::get_informer(mode, filename);
 	inf->connect(&model);
