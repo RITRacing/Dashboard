@@ -7,7 +7,8 @@ informer * informer::get_informer(op_mode mode, string filename){
     switch(mode){
         case vehicle:
             return new can_reader();
-        case testdata: //TODO
+        case testdata:
+            return new test_reader(filename);
         case user:
             return new input_reader();
     }

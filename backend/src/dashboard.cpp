@@ -43,7 +43,7 @@ int main(int argc, char** argv){
 	string filename; // name of file (if testdata)
 	int c;
     // TODO implement filename reading
-	while((c = getopt(argc, argv, "m:")) != -1){
+	while((c = getopt(argc, argv, "m:f:")) != -1){
 		switch(c){
 		case 'm':
 			{
@@ -62,6 +62,11 @@ int main(int argc, char** argv){
 
 			}
 			break;
+
+        case 'f':
+            filename = string(optarg);
+            break;
+
 		default:
 			cout << USAGE_STRING;
 			return EXIT_FAILURE;

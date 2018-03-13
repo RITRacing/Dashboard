@@ -86,6 +86,7 @@ string dash_model::json_from_map(map<string,string> m){
         }
         ss << "}@";
     }
+    //cout << ss.str() << endl;
     return ss.str();
 }
 
@@ -93,8 +94,10 @@ string dash_model::json_from_map(map<string,string> m){
 * Send the data in outgoing to frontend in json format
 **/
 void dash_model::update_frontend(){
-    string jstring = json_from_map(outgoing);
-    const char * json = jstring.c_str();
-    send(frontfd, json, strlen(json),0);
-    outgoing.clear();
+    if(outgoing.size() > 0){
+        string jstring = json_from_map(outgoing);
+        const char * json = jstring.c_str();
+        send(frontfd, json, strlen(json),0);
+        outgoing.clear();
+    }
 }

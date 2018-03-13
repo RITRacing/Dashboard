@@ -1,5 +1,6 @@
 #ifndef INFORMER_H
 #define INFORMER_H
+#include <fstream>
 #include "dashboard.h"
 #include "dash_model.h"
 #include "CAN.h"
@@ -30,6 +31,14 @@ private:
     void gather();
     void set_flags(uint8_t flagbyte);
     CAN can;
+};
+
+class test_reader: public informer{
+    public:
+         test_reader(string filename);
+    private:
+        ifstream filein;
+        void gather();
 };
 
 #endif
