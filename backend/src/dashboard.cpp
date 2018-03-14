@@ -1,6 +1,6 @@
 #include "dashboard.h"
 #include "dash_model.h"
-//#include "shift_controller.h" // TODO
+#include "shift_controller.h"
 #include "informer.h"
 #include <iostream>
 #include <csignal>
@@ -10,6 +10,8 @@
 #include <cstdlib>
 
 using namespace std;
+
+shift_controller * shiftc;
 
 informer * inf; // the object that collects data and sends to dash
 void sigint_handle(int signal){
@@ -22,9 +24,12 @@ void sigint_handle(int signal){
  * Create model, create informer and start it
  **/
 void initialize(op_mode mode, string filename){
-	//shift_controller shiftc;
-	//shiftc.begin(); // spawns shift thread
+
 	dash_model model(PORT); // create model, waits for server to connect
+
+    shiftc = new shift_controller(&model, UP_LISTEN, UP_OUT, DOWN_LISTEN, DOWN_OUT);
+    //shiftc.begin(); // spawns shift thread
+
 
 	inf = informer::get_informer(mode, filename);
 	inf->connect(&model);

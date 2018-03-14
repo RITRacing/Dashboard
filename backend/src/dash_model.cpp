@@ -11,7 +11,7 @@
 #include <netinet/tcp.h>
 
 using namespace std;
-
+// TODO protec with mutex
 /**
 * Establish a connection to the frontend
 * @param port: the port to run the server on
@@ -100,4 +100,20 @@ void dash_model::update_frontend(){
         send(frontfd, json, strlen(json),0);
         outgoing.clear();
     }
+}
+
+int dash_model::gear(){
+    map<string, string>::iterator itr = status.find(GEAR);
+    if(itr != status.end())
+        return stoi(itr->second);
+    else
+        return -1;
+}
+
+int dash_model::speed(){
+    map<string, string>::iterator itr = status.find(SPEED);
+    if(itr != status.end())
+        return stoi(itr->second);
+    else
+        return -1;
 }
