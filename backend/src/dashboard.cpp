@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <cstdlib>
+#include "wiringPi.h"
 
 using namespace std;
 
@@ -24,10 +25,12 @@ void sigint_handle(int signal){
  * Create model, create informer and start it
  **/
 void initialize(op_mode mode, string filename){
+    wiringPiSetupGpio();
 
 	dash_model model(PORT); // create model, waits for server to connect
-
+    cout << "about to make sc" << endl;
     shiftc = new shift_controller(&model, UP_LISTEN, UP_OUT, DOWN_LISTEN, DOWN_OUT);
+    cout << "made sc" << endl;
     //shiftc.begin(); // spawns shift thread
 
 
