@@ -50,6 +50,14 @@ void * alert_ecu(void * p){
     }
 }
 
+void * user_mode_routine(void * p){
+    dash_model model = *((dash_model*)p);
+    while(true){
+        SLEEP(.2);
+        model.update_frontend();
+    }
+}
+
 pthread_t shift_thread;
 /**
  * Define shift GPIO interrupts
@@ -61,9 +69,7 @@ void initialize(op_mode mode, string filename){
 
 	dash_model model(PORT); // create model, waits for server to connect
 
-    CAN * can = NULL;
-
-    can = new CAN();
+    CAN * can = new CAN();
 
     //pthread_t shift_thread;
     pthread_create(&shift_thread, NULL, alert_ecu, (void*)can);
@@ -73,6 +79,13 @@ void initialize(op_mode mode, string filename){
 
 	inf = informer::get_informer(mode, filename, can);
 	inf->connect(&model);
+    /*
+    if(mode == user){
+        pthread_t userthread;
+        pthread_create(&userthread, NULL, user_mode_routine, &model);
+        pthread_detach(userthread);
+    }
+    */
 	inf->begin(); // loops reading and sending info
 }
 

@@ -65,8 +65,11 @@ dash_model::dash_model(int port){
 * @param value: the new value
 */
 void dash_model::set(string key, string value){
+    modelmx.lock();
     if(status[key].compare(value))
+        cout << key << endl;
         status[key] = outgoing[key] = value;
+    modelmx.unlock();
 }
 
 /**
@@ -94,24 +97,42 @@ string dash_model::json_from_map(map<string,string> m){
 * Send the data in outgoing to frontend in json format
 **/
 void dash_model::update_frontend(){
+    modelmx.lock();
     if(outgoing.size() > 0){
         string jstring = json_from_map(outgoing);
+        cout << jstring<< endl;
         const char * json = jstring.c_str();
         send(frontfd, json, strlen(json),0);
         outgoing.clear();
     }
+    modelmx.unlock();
 }
 
 int dash_model::gear(){
+    modelmx.lock();
     map<string, string>::iterator itr = status.find(GEAR);
+    modelmx.unlock();
+    if(itr != status.end())
+        return stoi(itr->second);
+    else
+        return -1;
+
+}
+
+int dash_model::speed(){
+    modelmx.lock();
+    map<string, string>::iterator itr = status.find(SPEED);
+    modelmx.unlock();
     if(itr != status.end())
         return stoi(itr->second);
     else
         return -1;
 }
 
-int dash_model::speed(){
-    map<string, string>::iterator itr = status.find(SPEED);
+int dash_model::rpm(){
+    modelmx.lock();
+    map<string, string>::iterator itr = status.find(RPM);
+    modelmx.unlock();
     if(itr != status.end())
         return stoi(itr->second);
     else

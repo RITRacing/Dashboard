@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <mutex>
 using namespace std;
 
 class dash_model{
@@ -12,11 +13,14 @@ public:
     void update_frontend(); // send a json rep. of status to frontend
     int gear();
     int speed();
+    int rpm();
 private:
     map<string, string> status; // holds all current CAN values
     map<string, string> outgoing; // holds the last changed CAN values
     string json_from_map(map<string,string> m); // simple json building
     int frontfd; // frontend socket descriptor
 };
+
+static mutex modelmx;
 
 #endif

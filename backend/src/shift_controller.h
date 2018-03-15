@@ -7,6 +7,7 @@
 // seconds
 #define PADDLE_HOLD 0.15
 #define AUTOUP_HOLD 2
+#define AUTOUP_TRIGGER 10500
 #define SLEEP(m) usleep(m * 1000000) // sleep seconds
 #define UP true
 #define DOWN false
@@ -32,6 +33,8 @@ private:
         bool pressed();
         void shift();
     };
+    bool can_upshift();
+    bool can_downshift();
     dash_model * model;
     bool autoup_status;
 public:
@@ -45,6 +48,8 @@ public:
     void attempt_shift(bool up);
     bool is_autoup();
     void set_autoup(bool a);
+
+    bool auto_should_shift();
 };
 
 static long current_bounce;
@@ -54,4 +59,5 @@ extern shift_controller * shiftc;
 void * trigger_shift(void* p);
 void paddle_callback();
 
+static void * autoup_routine(void * p);
 #endif
