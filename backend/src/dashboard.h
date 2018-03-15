@@ -2,6 +2,7 @@
 #define DASHBOARD_H
 
 #include <string>
+#include <mutex>
 using namespace std;
 
 #define USAGE_STRING "Usage: ./dashboard -m <op_mode>\n -f <testfile> (if op_mode testdata)\n";
@@ -69,6 +70,12 @@ static string lfaults[8] = {"plug",
 					"uvolt",
 					"ovolt"};
 
+#define SHIFT_MSG_ID 0x001
 
+static char shiftmsg[8] = {0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00};
+static mutex msgmx;
+
+void ecu_up();
+void ecu_down();
 
 #endif

@@ -1,5 +1,6 @@
 #include "shift_controller.h"
 #include "wiringPi.h"
+#include "dashboard.h"
 #include <iostream>
 #include <pthread.h>
 using namespace std;
@@ -49,11 +50,13 @@ void shift_controller::attempt_shift(bool up){
             //current_bounce = millis();
             // TODO remove these, replace with conditional using static model
             model->set(GEAR, to_string(++gear));
+            ecu_up();
         }else if(!up && gear > 0){
             if(gear == 1 && (model->speed() < SPEED_LOCKOUT || gear > 1)){
                 downshifter->shift();
                 //current_bounce = millis();
                 model->set(GEAR, to_string(--gear));
+                ecu_down();
             }
         }
     }
@@ -67,10 +70,6 @@ bool shift_controller::is_autoup(){
 void shift_controller::set_autoup(bool a){
     autoup_status = a;
     model->set(AUTOUP, autoup_status ? "true" : "");
-}
-
-void shift_controller::shift_status(int gear){
-    // TODO - update model and implement shift message thread
 }
 
 void paddle_callback(){

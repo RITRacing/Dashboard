@@ -2,6 +2,6 @@ dashboard : dashboard.cpp dashboard.h dash_model.cpp dash_model.h informer.h inf
 	/bin/armv8-rpi3-linux-gnueabihf/bin/armv8-rpi3-linux-gnueabihf-g++  $^ -o dashboard -std=c++11 -lpthread -ggdb
 
 CAN.o:
-	ls
+	scp dash@f26.local:linux-can-utils/CAN.o .
 clean :
 	rm -f *.gch

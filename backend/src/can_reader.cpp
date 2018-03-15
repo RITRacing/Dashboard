@@ -3,9 +3,14 @@
 #include "CAN.h"
 #include <string>
 using namespace std;
+
+can_reader::can_reader(CAN * c){
+    can = c;
+}
 void can_reader::gather(){
+
     char msg[8];
-    uint32_t id = can.read_msg(msg);
+    uint32_t id = can->read_msg(msg);
 
     switch(id){
         case ECU_PRIM_ID:
@@ -30,6 +35,7 @@ void can_reader::gather(){
             break;
 
     }
+
 }
 
 void can_reader::set_flags(uint8_t flagbyte){

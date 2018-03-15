@@ -3,10 +3,10 @@
 #include "dash_model.h"
 using namespace std;
 
-informer * informer::get_informer(op_mode mode, string filename){
+informer * informer::get_informer(op_mode mode, string filename, CAN * can){
     switch(mode){
         case vehicle:
-            return new can_reader();
+            return new can_reader(can);
         case testdata:
             return new test_reader(filename);
         case user:

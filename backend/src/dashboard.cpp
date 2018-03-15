@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <cstdlib>
+#include <thread>
 #include "wiringPi.h"
 
 using namespace std;
@@ -19,6 +20,37 @@ void sigint_handle(int signal){
     inf->finish();
 }
 
+void ecu_up(){
+	msgmx.lock();
+	shiftmsg[0] |= 0x02;
+	msgmx.unlock();
+}
+
+void ecu_down(){
+	msgmx.lock();
+	shiftmsg[0] |= 0x01;
+	msgmx.unlock();
+}
+
+void * alert_ecu(void * p){
+    CAN can = *((CAN*)p);
+    uint8_t count = 0;
+    while(true){
+        msgmx.lock();
+        can.write_msg(SHIFT_MSG_ID, shiftmsg);
+        if(shiftmsg[0] != 0x00){
+            ++count;
+        }
+        if(count == 50){
+            count = 0;
+            shiftmsg[0] = 0x00;
+        }
+        msgmx.unlock();
+        usleep(1000);
+    }
+}
+
+pthread_t shift_thread;
 /**
  * Define shift GPIO interrupts
  * Start autoup listen thread
@@ -28,13 +60,18 @@ void initialize(op_mode mode, string filename){
     wiringPiSetupGpio();
 
 	dash_model model(PORT); // create model, waits for server to connect
-    cout << "about to make sc" << endl;
-    shiftc = new shift_controller(&model, UP_LISTEN, UP_OUT, DOWN_LISTEN, DOWN_OUT);
-    cout << "made sc" << endl;
-    //shiftc.begin(); // spawns shift thread
 
+    CAN * can = NULL;
 
-	inf = informer::get_informer(mode, filename);
+    can = new CAN();
+
+    //pthread_t shift_thread;
+    pthread_create(&shift_thread, NULL, alert_ecu, (void*)can);
+    pthread_detach(shift_thread);
+    shiftc = new shift_controller(&model, UP_LISTEN, UP_OUT,
+        DOWN_LISTEN, DOWN_OUT);
+
+	inf = informer::get_informer(mode, filename, can);
 	inf->connect(&model);
 	inf->begin(); // loops reading and sending info
 }

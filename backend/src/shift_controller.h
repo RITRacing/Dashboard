@@ -43,7 +43,6 @@ public:
     shift_output * upshifter;
     shift_output * downshifter;
     void attempt_shift(bool up);
-    void shift_status(int gear);
     bool is_autoup();
     void set_autoup(bool a);
 };

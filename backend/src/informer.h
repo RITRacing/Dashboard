@@ -7,7 +7,7 @@
 
 class informer{
 public:
-    static informer * get_informer(op_mode mode, string filename);
+    static informer * get_informer(op_mode mode, string filename, CAN * can);
     void connect(dash_model * ml);
     void begin(); // loop gathering data, then sending to frontend
     void finish(); // stop looping
@@ -27,10 +27,12 @@ private:
 };
 
 class can_reader: public informer{
+public:
+    can_reader(CAN * can);
 private:
     void gather();
     void set_flags(uint8_t flagbyte);
-    CAN can;
+    CAN * can;
 };
 
 class test_reader: public informer{
