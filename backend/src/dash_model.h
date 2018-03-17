@@ -19,6 +19,7 @@ private:
     map<string, string> outgoing; // holds the last changed CAN values
     string json_from_map(map<string,string> m); // simple json building
     int frontfd; // frontend socket descriptor
+    int telefd; // telemetry socket descriptor
 };
 
 static mutex modelmx;

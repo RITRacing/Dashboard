@@ -9,6 +9,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <netinet/tcp.h>
+#include <termios.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 using namespace std;
 // TODO protec with mutex
@@ -57,6 +60,13 @@ dash_model::dash_model(int port){
             perror("Frontend Socket initialization failed");
             exit(EXIT_FAILURE);
     }
+
+    //now set up telemetry Socket
+    telefd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY);
+    if(telefd == -1){
+        perror("could not open socket to xbee");
+        exit(EXIT_FAILURE);
+    }
 }
 
 /**
@@ -67,7 +77,6 @@ dash_model::dash_model(int port){
 void dash_model::set(string key, string value){
     modelmx.lock();
     if(status[key].compare(value))
-        cout << key << endl;
         status[key] = outgoing[key] = value;
     modelmx.unlock();
 }
@@ -95,14 +104,15 @@ string dash_model::json_from_map(map<string,string> m){
 
 /**
 * Send the data in outgoing to frontend in json format
+* And also send it to the ground station
 **/
 void dash_model::update_frontend(){
     modelmx.lock();
     if(outgoing.size() > 0){
         string jstring = json_from_map(outgoing);
-        cout << jstring<< endl;
         const char * json = jstring.c_str();
         send(frontfd, json, strlen(json),0);
+        write(telefd, json, strlen(json));
         outgoing.clear();
     }
     modelmx.unlock();

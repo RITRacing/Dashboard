@@ -18,7 +18,7 @@ void can_reader::gather(){
             model->set(OILT, to_string((uint8_t)msg[2]));
             model->set(WATERT, to_string((uint8_t)msg[3]));
             model->set(OILP, to_string((uint8_t)msg[4]/10));
-            //model->set(GEAR, to_string((uint8_t)msg[5]));
+            model->set(GEAR, to_string((uint8_t)msg[5]));
             model->set(SPEED, to_string(((((uint16_t)msg[6]) << 8) | msg[7])/10));
             break;
         case ECU_SEC_ID:
