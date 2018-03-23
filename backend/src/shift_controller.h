@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "dashboard.h"
 #include "dash_model.h"
+#include "CAN.h"
 // seconds
 #define PADDLE_HOLD 0.15
 #define AUTOUP_HOLD 2
@@ -21,8 +22,41 @@
 #define DOWN_LISTEN 5
 #define DOWN_OUT 6
 
-using namespace std;
+#define UPSHIFT_MSG 0x02
+#define DOWNSHIFT_MSG 0x01
+#define NOSHIFT_MSG 0x00
 
+#define SHIFT_MSG_COUNT 50
+
+using namespace std;
+class shift_controller{
+private:
+    char shift_msg[8] = {0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00};
+    uint8_t up_listen, down_listen;
+    dash_model * model;
+    bool autoup_status;
+    CAN * can;
+    int count;
+public:
+    shift_controller(dash_model *m, CAN * c, int upl, int downl);
+    inline void send_ecu_msg();
+    inline void reset_msg();
+    void shift(bool up);
+    bool is_autoup();
+    bool auto_should_shift();
+    void set_autoup(bool u);
+    bool pressed(bool up);
+};
+
+extern shift_controller * shiftc;
+
+static long bounce = BOUNCE_TIME;
+static void paddle_callback();
+static mutex mx;
+static mutex msgmx;
+static mutex automx;
+static void * message_routine(void* p);
+/*
 class shift_controller{
 private:
     class shift_output{
@@ -60,4 +94,5 @@ void * trigger_shift(void* p);
 void paddle_callback();
 
 static void * autoup_routine(void * p);
+*/
 #endif

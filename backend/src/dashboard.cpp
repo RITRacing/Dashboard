@@ -10,16 +10,18 @@
 #include <cstdlib>
 #include <thread>
 #include "wiringPi.h"
-
 using namespace std;
 
+informer * inf; // the object that collects data and sends to dash
 shift_controller * shiftc;
 
-informer * inf; // the object that collects data and sends to dash
+/**
+* Called on SIGINT, ends program
+**/
 void sigint_handle(int signal){
     inf->finish();
 }
-
+/*
 void ecu_up(){
 	msgmx.lock();
 	shiftmsg[0] |= 0x02;
@@ -49,16 +51,17 @@ void * alert_ecu(void * p){
         usleep(1000);
     }
 }
-
+*/
+/*
 void * user_mode_routine(void * p){
     dash_model model = *((dash_model*)p);
     while(true){
         SLEEP(.2);
         model.update_frontend();
     }
-}
+}*/
 
-pthread_t shift_thread;
+//pthread_t shift_thread;
 /**
  * Define shift GPIO interrupts
  * Start autoup listen thread
@@ -72,10 +75,9 @@ void initialize(op_mode mode, string filename){
     CAN * can = new CAN();
 
     //pthread_t shift_thread;
-    pthread_create(&shift_thread, NULL, alert_ecu, (void*)can);
-    pthread_detach(shift_thread);
-    shiftc = new shift_controller(&model, UP_LISTEN, UP_OUT,
-        DOWN_LISTEN, DOWN_OUT);
+    //pthread_create(&shift_thread, NULL, alert_ecu, (void*)can);
+    //pthread_detach(shift_thread);
+    shiftc = new shift_controller(&model, can, UP_LISTEN, DOWN_LISTEN);
 
 	inf = informer::get_informer(mode, filename, can);
 	inf->connect(&model);

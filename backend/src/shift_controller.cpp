@@ -5,7 +5,130 @@
 #include <pthread.h>
 using namespace std;
 
-mutex shift_controller::mx;
+void * autup_routine(void*p){
+    while(true){
+        SLEEP(.18);
+        if(shiftc->auto_should_shift()){
+            shiftc->shift(UP);
+        }
+    }
+}
+
+shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl){
+    // initialize functions
+    model = m;
+    can = c;
+    up_listen = upl;
+    down_listen = downl;
+    autoup_status = false;
+
+    // start message and auto-up threads
+    pthread_t msg_thread, auto_thread;
+    pthread_create(&msg_thread, NULL, message_routine, NULL);
+    pthread_detach(msg_thread);
+
+    pthread_create(&auto_thread, NULL, autup_routine, NULL);
+    pthread_detach(auto_thread);
+
+    // set up paddle interrupts
+    pinMode(up_listen, INPUT); pinMode(down_listen, INPUT);
+    wiringPiISR(up_listen, INT_EDGE_FALLING, &paddle_callback);
+    wiringPiISR(down_listen, INT_EDGE_FALLING, &paddle_callback);
+}
+
+void shift_controller::shift(bool up){
+    mx.lock();
+    if(up){
+        if(model->gear() < MAX_GEAR){
+            shift_msg[0] |= UPSHIFT_MSG;
+        }
+    }else{
+        if((model->gear() == 1 && model->speed() < SPEED_LOCKOUT) ||
+            model->gear() > 1){
+                msgmx.lock(); shift_msg[0] |= DOWNSHIFT_MSG; msgmx.unlock();
+        }
+    }
+    mx.unlock();
+}
+
+bool shift_controller::is_autoup(){
+    return autoup_status;
+}
+
+void shift_controller::set_autoup(bool u){
+    autoup_status = u;
+}
+
+bool shift_controller::pressed(bool up){
+    if(up)
+        return !digitalRead(up_listen);
+    return !digitalRead(down_listen);
+}
+
+bool shift_controller::auto_should_shift(){
+    int rpm = model->rpm();
+    return autoup_status && rpm != -1 && rpm >= AUTOUP_TRIGGER;
+}
+
+void shift_controller::send_ecu_msg(){
+    can->write_msg(SHIFT_MSG_ID, shift_msg);
+    if(shift_msg[0] != NOSHIFT_MSG){
+        ++count;
+    }
+    if(count == SHIFT_MSG_COUNT){
+        count = 0;
+        shift_msg[0] = NOSHIFT_MSG;
+    }
+}
+
+static bool just_changed;
+
+void * trigger_shift(void* p){
+    //SLEEP(PADDLE_HOLD);
+    bool upon = shiftc->pressed(UP);
+    bool downon = shiftc->pressed(DOWN);
+    if(upon && downon){
+            SLEEP(AUTOUP_HOLD);
+            //just_changed = !just_changed;
+            if(automx.try_lock() && shiftc->pressed(UP)
+                && shiftc->pressed(DOWN)){
+                //&& !just_changed){
+                cout << "AUTO: " << shiftc->is_autoup() << endl;
+                shiftc->set_autoup(!shiftc->is_autoup());
+                automx.unlock();
+            }
+
+    }else if(upon){
+        cout << "UP" << endl;
+        shiftc->shift(UP);
+    }else if(downon){
+        cout << "DOWN" << endl;
+        shiftc->shift(DOWN);
+    }
+    return NULL;
+}
+
+void paddle_callback(){
+    if(millis() - bounce >= BOUNCE_TIME){
+        pthread_t thread;
+        pthread_create(&thread, NULL, trigger_shift, (void*)0);
+        pthread_detach(thread);
+        bounce = millis();
+    }
+}
+
+void * message_routine(void* p){
+    uint8_t count = 0;
+    while(!shiftc);
+    while(true){
+        msgmx.lock();
+        shiftc->send_ecu_msg();
+        msgmx.unlock();
+        usleep(1000);
+    }
+}
+
+/*
 mutex shift_controller::automx;
 
 shift_controller::shift_output::shift_output(int l, int o){
@@ -33,7 +156,7 @@ shift_controller::shift_controller(dash_model * m, int uplisten, int upout,
     model = m;
     just_changed = false;
     autoup_status = false;
-    current_bounce = millis();
+    bounce = millis();
     upshifter = new shift_output(uplisten, upout);
     downshifter = new shift_output(downlisten, downout);
     // listen for interrupt
@@ -74,11 +197,11 @@ void shift_controller::set_autoup(bool a){
 }
 
 void paddle_callback(){
-    if(millis() - current_bounce >= BOUNCE_TIME){
+    if(millis() - bounce >= BOUNCE_TIME){
         pthread_t thread;
         pthread_create(&thread, NULL, trigger_shift, (void*)0);
         pthread_detach(thread);
-        current_bounce = millis();
+        bounce = millis();
     }
 }
 
@@ -131,3 +254,4 @@ void * autoup_routine(void * p){
         }
     }
 }
+*/

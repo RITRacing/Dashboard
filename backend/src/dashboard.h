@@ -72,9 +72,6 @@ static string lfaults[8] = {"plug",
 
 #define SHIFT_MSG_ID 0x001
 
-static char shiftmsg[8] = {0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00};
-static mutex msgmx;
-
 void ecu_up();
 void ecu_down();
 
