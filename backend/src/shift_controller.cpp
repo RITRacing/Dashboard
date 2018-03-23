@@ -85,15 +85,12 @@ void shift_controller::send_ecu_msg(){
 static bool just_changed;
 
 void * trigger_shift(void* p){
-    //SLEEP(PADDLE_HOLD);
     bool upon = shiftc->pressed(UP);
     bool downon = shiftc->pressed(DOWN);
     if(upon && downon){
             SLEEP(AUTOUP_HOLD);
-            //just_changed = !just_changed;
             if(automx.try_lock() && shiftc->pressed(UP)
                 && shiftc->pressed(DOWN)){
-                //&& !just_changed){
                 cout << "AUTO: " << shiftc->is_autoup() << endl;
                 shiftc->set_autoup(!shiftc->is_autoup());
             }

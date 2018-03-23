@@ -64,7 +64,7 @@ var rpm = new DashValue("RPM", "", 0, 11500);
 dashValues[dashValues.length] = rpm;
 var soc = new DashValue("SOC", "%", 0, 100);
 dashValues[dashValues.length] = soc;
-var lambdactl = new DashValue("LAMDA CTL", "", 0, 1);
+var lambdactl = new DashValue("LAMBDA CTL", "", 0, 1);
 dashValues[dashValues.length] = lambdactl;
 var flc = new DashValue("FLC", "", .5, 1.5);
 dashValues[dashValues.length] = flc;
@@ -78,18 +78,44 @@ dashValues[dashValues.length] = current;
 var autoup = new DashValue("Auto-Up", "", 0, 1);
 dashValues[dashValues.length] = autoup;
 var hold = new DashValue("Hold", "", 0, 1);
+dashValues[dashValues.length] = hold;
+var cel = new DashValue("", "", 0, 1);
+dashValues[dashValues.length] = cel;
 
 // updates visuals based on data received
-// TODO - write code to receive lambdactl and flc messages
+function setCEL(wt, op){
+    if(wt>=135 || op < .05)
+        cel.update(1);
+    else if(wt>=130 || op < .1)
+        cel.update(3/4);
+    else if(wt>=120 || op < .2)
+        cel.update(1/2);
+    else
+        cel.update(0);
+
+    var celtext = "";
+    if(wt >= 120)
+        celtext += "W ";
+    if(op < .2)
+        celtext += "O";
+
+    // since every variable is public in this language...
+    if(cel.visual != null)
+    cel.visual.setText(celtext);
+
+}
+
 function updateData(data){
     if("OILT" in data){
         oilt.update(data["OILT"]);
     }
     if("OILP" in data){
         oilp.update(data["OILP"]);
+        setCEL(watert.value, oilp.value);
     }
     if("WATERT" in data){
         watert.update(data["WATERT"]);
+        setCEL(watert.value, oilp.value);
     }
     if("BATT" in data){
         volt.update(data["BATT"]);
@@ -101,6 +127,8 @@ function updateData(data){
 
         //since the e car doesnt send gear, only the c car will switch here
         gear.update(data["GEAR"]);
+        if(gear.value == 0)
+            gear.value = "N";
         if(gear.value == "N" && currentDisplay == driveDisplay){
             driveDisplay.hide();
             currentDisplay = parkDisplay;
@@ -141,14 +169,16 @@ function updateData(data){
             autoup.update(0);
     }
 
-    if("LAMBDACTL" in data){
-        if(data["LAMBDACTL"] === "true")
+    if("lctl" in data){
+        console.log("LAMBDACTL in data!");
+        if(data["lctl"])
             lambdactl.update(1);
         else {
             lambdactl.update(0);
         }
     }
     if("FLC" in data){
+        console.log("FLC in data!");
         flc.update(data["FLC"]);
     }
 
@@ -197,9 +227,40 @@ datasocket.onmessage = function(event){
 */
 client.connect(8787, "127.0.0.1", function(){
 	client.write("hello from server");
+    console.log("setup socket");
 });
 
+/*
 client.on('data', function(evt){
-	var jdata = JSON.parse(evt);
-	updateData(jdata);
+    var jsons = String(evt).split("@");
+    //console.log(jsons);
+    for(var i = 0; i < jsons.length; ++i){
+        if(jsons[i] !== ""){
+            console.log(jsons[i]);
+            var jdata = JSON.parse(jsons[i]);
+    	    updateData(jdata);
+        }
+    }
+});
+*/
+
+var chunk = "";
+client.on('data', function(data) {
+
+    chunk += data.toString(); // Add string on the end of the variable 'chunk'
+    var d_index = chunk.indexOf('@'); // Find the delimiter
+
+    // While loop to keep going until no delimiter can be found
+    while (d_index > -1) {
+
+
+        var json = JSON.parse(chunk.substring(0,d_index)); // Parse the current string
+        updateData(json); // Function that does something with the current chunk of valid json.
+
+
+        chunk = chunk.substring(d_index+1); // Cuts off the processed chunk
+        d_index = chunk.indexOf('@'); // Find the new delimiter
+
+    }
+
 });
