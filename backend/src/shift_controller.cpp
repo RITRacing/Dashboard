@@ -57,6 +57,7 @@ bool shift_controller::is_autoup(){
 
 void shift_controller::set_autoup(bool u){
     autoup_status = u;
+    model->set(AUTOUP, u ? "true" : "");
 }
 
 bool shift_controller::pressed(bool up){
@@ -95,8 +96,8 @@ void * trigger_shift(void* p){
                 //&& !just_changed){
                 cout << "AUTO: " << shiftc->is_autoup() << endl;
                 shiftc->set_autoup(!shiftc->is_autoup());
-                automx.unlock();
             }
+            automx.unlock();
 
     }else if(upon){
         cout << "UP" << endl;

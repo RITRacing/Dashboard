@@ -38,6 +38,7 @@ enum op_mode{
 #define CURRENT "CURRENT"
 #define LFAULT "LFAULT"
 #define SOC "SOC"
+#define MCS "MCS" // motor controller state
 
 /**
 * The following are CAN ids that devices on the bus send
@@ -58,6 +59,9 @@ enum op_mode{
 // Level Fault Indication Bits (e car)
 #define BMS_FLAGS_ID 0x0622
 
+// Indication of current motor controller state
+#define MCS_INTERNAL_STATE_ID 0x0AA
+
 /**
 * Enum of level faults used to quickly determine fault from 8 bit value
 **/
@@ -69,6 +73,25 @@ static string lfaults[8] = {"plug",
 					"temp",
 					"uvolt",
 					"ovolt"};
+
+static string mc_states[16] = {
+	"VSM Start",
+	"Pre-charge Init",
+	"Pre-charge Active",
+	"Pre-charge Complete",
+	"VSM Wait",
+	"VSM Ready",
+	"Motor Running",
+	"Blink Fault Code",
+	"Invalid State",
+	"Invalid State",
+	"Invalid State",
+	"Invalid State",
+	"Invalid State",
+	"Invalid State",
+	"Shutdown in Process",
+	"Recycle Power"
+};
 
 #define SHIFT_MSG_ID 0x001
 

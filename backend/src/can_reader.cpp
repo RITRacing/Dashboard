@@ -42,6 +42,9 @@ void can_reader::gather(){
         case BMS_FLAGS_ID:
             set_flags(msg[5]);
             break;
+        case MCS_INTERNAL_STATE_ID:
+            model->set(MCS, mc_states[msg[0]]);
+            break;
     }
 }
 
