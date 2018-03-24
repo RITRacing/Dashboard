@@ -71,6 +71,8 @@ dashValues[dashValues.length] = flc;
 var lfaulttext = new DashValue("", "", 0, 1); // the text for the fault
 lfaulttext.update("");
 dashValues[dashValues.length] = lfaulttext;
+var mcstate = new DashValue("VSM", "", 0, 1);
+dashValues[dashValues.length] = mcstate;
 var lfault = new DashValue("", "", 0, 1); // the boolean fault indicator
 dashValues[dashValues.length] = lfault;
 var current = new DashValue("Current", "A", -32000, 32000);
@@ -182,6 +184,10 @@ function updateData(data){
         flc.update(data["FLC"]);
     }
 
+    if("MCS" in  data){
+        mcstate.update(data["MCS"]);
+    }
+
     if(watert.value < 50 || lambdactl.value == 0){
         hold.update(1);
     }else{
@@ -214,53 +220,24 @@ if(carType == 'c'){
 
 currentDisplay.show();
 var client = new net.Socket();
-/*
-var datasocket = new WebSocket("ws:127.0.0.1:8787");
-datasocket.onopen = function(event){
-    datasocket.send("Dashboard Frontend");
-};
-var on = true;
-datasocket.onmessage = function(event){
-    var data = JSON.parse(event.data);
-    updateData(data);
-};
-*/
+
 client.connect(8787, "127.0.0.1", function(){
 	client.write("hello from server");
     console.log("setup socket");
 });
 
-/*
-client.on('data', function(evt){
-    var jsons = String(evt).split("@");
-    //console.log(jsons);
-    for(var i = 0; i < jsons.length; ++i){
-        if(jsons[i] !== ""){
-            console.log(jsons[i]);
-            var jdata = JSON.parse(jsons[i]);
-    	    updateData(jdata);
-        }
-    }
-});
-*/
-
 var chunk = "";
 client.on('data', function(data) {
-
     chunk += data.toString(); // Add string on the end of the variable 'chunk'
     var d_index = chunk.indexOf('@'); // Find the delimiter
 
     // While loop to keep going until no delimiter can be found
     while (d_index > -1) {
-
-
         var json = JSON.parse(chunk.substring(0,d_index)); // Parse the current string
         updateData(json); // Function that does something with the current chunk of valid json.
 
-
         chunk = chunk.substring(d_index+1); // Cuts off the processed chunk
         d_index = chunk.indexOf('@'); // Find the new delimiter
-
     }
 
 });

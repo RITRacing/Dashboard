@@ -60,7 +60,7 @@ enum op_mode{
 #define BMS_FLAGS_ID 0x0622
 
 // Indication of current motor controller state
-#define MCS_INTERNAL_STATE_ID 0x0AA
+#define MCS_INTERNAL_STATE_ID 0x00AA
 
 /**
 * Enum of level faults used to quickly determine fault from 8 bit value
