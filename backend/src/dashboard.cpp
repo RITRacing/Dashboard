@@ -23,37 +23,6 @@ void sigint_handle(int signal){
     inf->finish();
 }
 
-void * gps_routine(void * p){
-    CAN* can = (CAN*) p;
-    GPS gps;
-    while(1){
-        gps.read_sentence();
-        map<string, float> current = gps.get_current();
-        uint32_t lat_thou = current[LATITUDE] / .001;
-        uint32_t long_thou = current[LONGITUDE] / .001;
-        uint16_t vel = current[VELOCITY] / .1;
-        uint16_t angle = current[ANGLE] / .1;
-
-        char msg1[8] = {
-            lat_thou >> 16,
-            (lat_thou & 0x0000FF00) >> 8,
-            lat_thou & 0xFF,
-            long_thou >> 16,
-            (long_thou & 0x0000FF00) >> 8,
-            long_thou & 0xFF,
-            vel >> 8,
-            vel & 0xFF
-        };
-
-        char msg2[8] = {angle >> 8, angle & 0xFF,
-            0x00,0x00,0x00,0x00,0x00,0x00};
-
-        can->write_msg(GPS_ID_1, msg1);
-        can->write_msg(GPS_ID_2, msg2);
-        SLEEP(.001);
-    }
-}
-
 /**
  * Define shift GPIO interrupts
  * Start autoup listen thread
@@ -64,19 +33,25 @@ void initialize(op_mode mode, string filename){
 
 	dash_model model(PORT); // create model, waits for server to connect
 
-    CAN * can = new CAN();
+    CAN * can = new CAN(); // connect to can0
 
+    // start the GPS thread
     pthread_t gpsthread;
     pthread_create(&gpsthread, NULL, gps_routine, can);
+
+    // create and start the shift_controller
     shiftc = new shift_controller(&model, can, UP_LISTEN, DOWN_LISTEN);
 
+    // set up information gathering, sending
 	inf = informer::get_informer(mode, filename, can);
 	inf->connect(&model);
-	inf->begin(); // loops reading and sending info
+	inf->loop(); // loops reading and sending info
 }
 
 /**
 * Get the command line arguments and initialize
+* @param argc: number of CLIs
+* @param argv: CLIs
 **/
 int main(int argc, char** argv){
 	// set up the signal handler

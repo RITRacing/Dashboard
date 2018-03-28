@@ -7,6 +7,9 @@
 
 using namespace std;
 
+/**
+* Prompt the user for space separated key and value, set them in the model
+**/
 void input_reader::gather(){
     cout << "Enter <key> <value>";
     string in;

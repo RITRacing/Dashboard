@@ -89,8 +89,6 @@ dash_model::dash_model(int port){
     options.c_cflag |= CS8;
     options.c_cflag &= ~CRTSCTS;
     tcsetattr(telefd, TCSANOW, &options); // set these options NOW
-
-    times = 0; // initialize placeholder telemetry message counter
 }
 
 /**

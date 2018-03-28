@@ -6,6 +6,9 @@
 #include "informer.h"
 using namespace std;
 
+/**
+* Open the file
+**/
 test_reader::test_reader(string filename){
     filein.open(filename);
     if(!filein.is_open()){
@@ -14,6 +17,9 @@ test_reader::test_reader(string filename){
     }
 }
 
+/**
+* Read .csv data, set it into model
+**/
 void test_reader::gather(){
     string line;
     if(getline(filein, line)){

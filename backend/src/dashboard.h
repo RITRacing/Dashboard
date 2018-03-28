@@ -7,6 +7,9 @@ using namespace std;
 
 #define USAGE_STRING "Usage: ./dashboard -m <op_mode>\n -f <testfile> (if op_mode testdata)\n";
 
+// very useful macro, unless you think in microseconds.
+#define SLEEP(m) usleep(m * 1000000) // sleep seconds
+
 // the port to host the socket server on
 #define PORT 8787
 
@@ -75,7 +78,7 @@ enum op_mode{
 #define MCS_INTERNAL_STATE_ID 0x00AA
 
 /**
-* Enum of level faults used to quickly determine fault from 8 bit value
+* Array of level faults used to quickly determine fault from 8 bit value
 **/
 static string lfaults[8] = {"plug",
 					"intl",
@@ -86,6 +89,10 @@ static string lfaults[8] = {"plug",
 					"uvolt",
 					"ovolt"};
 
+/**
+* Array of motor controller states used to quickly determine fault from given
+* state code.
+**/
 static string mc_states[16] = {
 	"VSM Start",
 	"Pre-charge Init",
@@ -110,5 +117,6 @@ static string mc_states[16] = {
 #define TELEMETRY_PORT "/dev/ttyUSB0"
 #define GPS_PORT "/dev/ttyS0"
 #define GPS_ID 0x00AA
+#define GPS_ID_SEC 0x00AB
 
 #endif

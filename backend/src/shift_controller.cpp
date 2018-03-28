@@ -5,6 +5,9 @@
 #include <pthread.h>
 using namespace std;
 
+/**
+* Constantly checks for RPM threshold and if autoup enabled, auto upshifts
+**/
 void * autup_routine(void*p){
     while(true){
         SLEEP(.18);
@@ -14,6 +17,9 @@ void * autup_routine(void*p){
     }
 }
 
+/**
+* Initialize fields, spin up shift message and autoup threads
+**/
 shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl){
     // initialize functions
     model = m;
@@ -36,6 +42,9 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl){
     wiringPiISR(down_listen, INT_EDGE_FALLING, &paddle_callback);
 }
 
+/**
+* Executes a shift by sending the ECU shift messages
+**/
 void shift_controller::shift(bool up){
     mx.lock();
     if(up){
@@ -51,26 +60,41 @@ void shift_controller::shift(bool up){
     mx.unlock();
 }
 
+/**
+* Get if autoup is enabled or not
+**/
 bool shift_controller::is_autoup(){
     return autoup_status;
 }
 
+/**
+* Turn autoup on or off
+**/
 void shift_controller::set_autoup(bool u){
     autoup_status = u;
     model->set(AUTOUP, u ? "true" : "");
 }
 
+/**
+* Get if a paddle is pressed or not
+**/
 bool shift_controller::pressed(bool up){
     if(up)
         return !digitalRead(up_listen);
     return !digitalRead(down_listen);
 }
 
+/**
+* Get if autoup is enabled and RPM is above threshold
+**/
 bool shift_controller::auto_should_shift(){
     int rpm = model->rpm();
     return autoup_status && rpm != -1 && rpm >= AUTOUP_TRIGGER;
 }
 
+/**
+* Send a message indicating shift intent to the ECU
+**/
 void shift_controller::send_ecu_msg(){
     can->write_msg(SHIFT_MSG_ID, shift_msg);
     if(shift_msg[0] != NOSHIFT_MSG){
@@ -82,20 +106,24 @@ void shift_controller::send_ecu_msg(){
     }
 }
 
-static bool just_changed;
-
+/**
+* Determine which kindof shift is happenening and execute it
+**/
 void * trigger_shift(void* p){
     bool upon = shiftc->pressed(UP);
     bool downon = shiftc->pressed(DOWN);
+
+    // check if both are down, then check upshifter, then downshifter
     if(upon && downon){
             SLEEP(AUTOUP_HOLD);
+            // two threads will always spawn b/c of 2 paddles.
+            // automx keeps the second from turning off autoup
             if(automx.try_lock() && shiftc->pressed(UP)
                 && shiftc->pressed(DOWN)){
                 cout << "AUTO: " << shiftc->is_autoup() << endl;
                 shiftc->set_autoup(!shiftc->is_autoup());
             }
             automx.unlock();
-
     }else if(upon){
         cout << "UP" << endl;
         shiftc->shift(UP);
@@ -106,6 +134,9 @@ void * trigger_shift(void* p){
     return NULL;
 }
 
+/**
+* Routine called whenver a paddle-triggered interrupt is received
+**/
 void paddle_callback(){
     if(millis() - bounce >= BOUNCE_TIME){
         pthread_t thread;
@@ -115,6 +146,9 @@ void paddle_callback(){
     }
 }
 
+/**
+* Sends a message to the ECU indicating shift intent every millisecond
+**/
 void * message_routine(void* p){
     uint8_t count = 0;
     while(!shiftc);
@@ -125,131 +159,3 @@ void * message_routine(void* p){
         usleep(1000);
     }
 }
-
-/*
-mutex shift_controller::automx;
-
-shift_controller::shift_output::shift_output(int l, int o){
-    // initialize fields
-    listen_pin = l;
-    output_pin = o;
-
-    // setup GPIO registers
-    pinMode(o, OUTPUT);
-    pinMode(l, INPUT);
-}
-
-bool shift_controller::shift_output::pressed(){
-    return !digitalRead(listen_pin);
-}
-
-void shift_controller::shift_output::shift(){
-    digitalWrite(output_pin, HIGH);
-    SLEEP(SHIFT_HOLD);
-    digitalWrite(output_pin, LOW);
-}
-
-shift_controller::shift_controller(dash_model * m, int uplisten, int upout,
-    int downlisten, int downout){
-    model = m;
-    just_changed = false;
-    autoup_status = false;
-    bounce = millis();
-    upshifter = new shift_output(uplisten, upout);
-    downshifter = new shift_output(downlisten, downout);
-    // listen for interrupt
-    wiringPiISR(uplisten, INT_EDGE_FALLING, &paddle_callback);
-    wiringPiISR(downlisten, INT_EDGE_FALLING, &paddle_callback);
-
-    pthread_t autothread;
-    pthread_create(&autothread, NULL, autoup_routine, NULL);
-    pthread_detach(autothread);
-}
-
-void shift_controller::attempt_shift(bool up){
-    shift_controller::mx.lock();
-
-        int gear = model->gear();
-        if(up && can_upshift()){
-            upshifter->shift();
-            model->set(GEAR, to_string(++gear));
-            ecu_up();
-        }else if(!up && gear > 0){
-            if(can_downshift()){
-                downshifter->shift();
-                model->set(GEAR, to_string(--gear));
-                ecu_down();
-            }
-        }
-
-    shift_controller::mx.unlock();
-}
-
-bool shift_controller::is_autoup(){
-    return autoup_status;
-}
-
-void shift_controller::set_autoup(bool a){
-    autoup_status = a;
-    model->set(AUTOUP, autoup_status ? "true" : "");
-}
-
-void paddle_callback(){
-    if(millis() - bounce >= BOUNCE_TIME){
-        pthread_t thread;
-        pthread_create(&thread, NULL, trigger_shift, (void*)0);
-        pthread_detach(thread);
-        bounce = millis();
-    }
-}
-
-//mutex autom;
-void * trigger_shift(void* p){
-    SLEEP(PADDLE_HOLD);
-    bool upon = shiftc->upshifter->pressed();
-    bool downon = shiftc->downshifter->pressed();
-    if(upon && downon){
-            SLEEP(AUTOUP_HOLD);
-            shift_controller::automx.lock();
-            just_changed = !just_changed;
-            if(shiftc->upshifter->pressed() && shiftc->downshifter->pressed()
-                && !just_changed){
-                cout << "AUTO: " << shiftc->is_autoup() << endl;
-                shiftc->set_autoup(!shiftc->is_autoup());
-            }
-            shift_controller::automx.unlock();
-    }else if(upon){
-        cout << "UP" << endl;
-        shiftc->attempt_shift(UP);
-    }else if(downon){
-        cout << "DOWN" << endl;
-        shiftc->attempt_shift(DOWN);
-    }
-    return NULL;
-}
-
-bool shift_controller::can_upshift(){
-    int gear = model->gear();
-    return gear < MAX_GEAR;
-
-}
-
-bool shift_controller::can_downshift(){
-    int gear = model->gear();
-    return (gear == 1 && model->speed() < SPEED_LOCKOUT) || gear > 1;
-}
-
-bool shift_controller::auto_should_shift(){
-    int rpm = model->rpm();
-    return autoup_status && rpm != -1 && rpm >= AUTOUP_TRIGGER;
-}
-
-void * autoup_routine(void * p){
-    while(true){
-        SLEEP(.1);
-        if(shiftc->auto_should_shift()){
-            shiftc->attempt_shift(UP);
-        }
-    }
-}
-*/
