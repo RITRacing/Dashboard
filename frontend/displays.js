@@ -129,5 +129,5 @@ EDriveDisplay.prototype.show = function(){
     current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit,textColor));
     lfault.setVisual(new Indicator("", 3 * width/4, height/4, height/8,
     lfault.min, lfault.max));
-    mcstate.setVisual(new StatLabel(3*width/4, 3*height/4-70, 30, mcstate.name, mcstate.unit, textColor));
+    mcstate.setVisual(new StatLabel(width-20, 3*height/4-70, 30, mcstate.name, mcstate.unit, textColor));
 }

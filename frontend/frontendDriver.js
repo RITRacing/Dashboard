@@ -72,6 +72,7 @@ var lfaulttext = new DashValue("", "", 0, 1); // the text for the fault
 lfaulttext.update("");
 dashValues[dashValues.length] = lfaulttext;
 var mcstate = new DashValue("VSM", "", 0, 1);
+mcstate.update("no data");
 dashValues[dashValues.length] = mcstate;
 var lfault = new DashValue("", "", 0, 1); // the boolean fault indicator
 dashValues[dashValues.length] = lfault;

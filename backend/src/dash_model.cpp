@@ -66,7 +66,7 @@ dash_model::dash_model(int port){
     }
 
     // now open telemetry Socket (serial port to xbee)
-    telefd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY);
+    telefd = open(TELEMETRY_PORT, O_RDWR | O_NOCTTY | O_NDELAY);
     if(telefd == -1){
         perror("could not open socket to xbee");
         exit(EXIT_FAILURE);
@@ -134,18 +134,20 @@ void dash_model::update_frontend(){
     if(outgoing.size() > 0){
         string jstring = json_from_map(outgoing);
         const char * json = jstring.c_str();
+        cout << json << endl;
         send(frontfd, json, strlen(json),0);
-
-        // (temporary) send whole status every 10th message
-        if(times == 10){
-            json = string(json_from_map(status)).c_str();
-            write(telefd, json, strlen(json));
-            times = 0;
-        }
-
         outgoing.clear();
-        ++times;
     }
+    modelmx.unlock();
+}
+
+/**
+* Dumps status to out xbee to ground station
+**/
+void dash_model::update_ground_station(){
+    modelmx.lock();
+    const char * json = json_from_map(status).c_str();
+    write(telefd, json, strlen(json));
     modelmx.unlock();
 }
 

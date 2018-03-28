@@ -1,5 +1,3 @@
-
-
 /**
     Contains a value from the ECU, maintains a visual.
 **/

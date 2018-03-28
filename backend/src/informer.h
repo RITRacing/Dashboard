@@ -4,6 +4,7 @@
 #include "dashboard.h"
 #include "dash_model.h"
 #include "CAN.h"
+#include "GPS.h"
 
 class informer{
 public:
@@ -28,7 +29,7 @@ private:
 
 class can_reader: public informer{
 public:
-    can_reader(CAN * can);
+    can_reader(CAN *  can);
 private:
     void gather();
     void set_flags(uint8_t flagbyte);

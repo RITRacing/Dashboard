@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <thread>
 #include "wiringPi.h"
+#include "GPS.h"
 using namespace std;
 
 informer * inf; // the object that collects data and sends to dash
@@ -21,47 +22,38 @@ shift_controller * shiftc;
 void sigint_handle(int signal){
     inf->finish();
 }
-/*
-void ecu_up(){
-	msgmx.lock();
-	shiftmsg[0] |= 0x02;
-	msgmx.unlock();
-}
 
-void ecu_down(){
-	msgmx.lock();
-	shiftmsg[0] |= 0x01;
-	msgmx.unlock();
-}
+void * gps_routine(void * p){
+    CAN* can = (CAN*) p;
+    GPS gps;
+    while(1){
+        gps.read_sentence();
+        map<string, float> current = gps.get_current();
+        uint32_t lat_thou = current[LATITUDE] / .001;
+        uint32_t long_thou = current[LONGITUDE] / .001;
+        uint16_t vel = current[VELOCITY] / .1;
+        uint16_t angle = current[ANGLE] / .1;
 
-void * alert_ecu(void * p){
-    CAN can = *((CAN*)p);
-    uint8_t count = 0;
-    while(true){
-        msgmx.lock();
-        can.write_msg(SHIFT_MSG_ID, shiftmsg);
-        if(shiftmsg[0] != 0x00){
-            ++count;
-        }
-        if(count == 50){
-            count = 0;
-            shiftmsg[0] = 0x00;
-        }
-        msgmx.unlock();
-        usleep(1000);
+        char msg1[8] = {
+            lat_thou >> 16,
+            (lat_thou & 0x0000FF00) >> 8,
+            lat_thou & 0xFF,
+            long_thou >> 16,
+            (long_thou & 0x0000FF00) >> 8,
+            long_thou & 0xFF,
+            vel >> 8,
+            vel & 0xFF
+        };
+
+        char msg2[8] = {angle >> 8, angle & 0xFF,
+            0x00,0x00,0x00,0x00,0x00,0x00};
+
+        can->write_msg(GPS_ID_1, msg1);
+        can->write_msg(GPS_ID_2, msg2);
+        SLEEP(.001);
     }
 }
-*/
-/*
-void * user_mode_routine(void * p){
-    dash_model model = *((dash_model*)p);
-    while(true){
-        SLEEP(.2);
-        model.update_frontend();
-    }
-}*/
 
-//pthread_t shift_thread;
 /**
  * Define shift GPIO interrupts
  * Start autoup listen thread
@@ -74,20 +66,12 @@ void initialize(op_mode mode, string filename){
 
     CAN * can = new CAN();
 
-    //pthread_t shift_thread;
-    //pthread_create(&shift_thread, NULL, alert_ecu, (void*)can);
-    //pthread_detach(shift_thread);
+    pthread_t gpsthread;
+    pthread_create(&gpsthread, NULL, gps_routine, can);
     shiftc = new shift_controller(&model, can, UP_LISTEN, DOWN_LISTEN);
 
 	inf = informer::get_informer(mode, filename, can);
 	inf->connect(&model);
-    /*
-    if(mode == user){
-        pthread_t userthread;
-        pthread_create(&userthread, NULL, user_mode_routine, &model);
-        pthread_detach(userthread);
-    }
-    */
 	inf->begin(); // loops reading and sending info
 }
 
@@ -102,7 +86,6 @@ int main(int argc, char** argv){
 	op_mode mode; // mode of operation
 	string filename; // name of file (if testdata)
 	int c;
-    // TODO implement filename reading
 	while((c = getopt(argc, argv, "m:f:")) != -1){
 		switch(c){
 		case 'm':

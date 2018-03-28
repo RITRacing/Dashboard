@@ -18,7 +18,6 @@ can_reader::can_reader(CAN * c){
 * Reads a CAN message from the bus and sets the model according to what it read.
 **/
 void can_reader::gather(){
-
     char msg[8];
     uint32_t id = can->read_msg(msg);
     switch(id){
@@ -32,7 +31,7 @@ void can_reader::gather(){
                 | msg[7])/10));
             break;
         case ECU_SEC_ID:
-            model->set(BATT, to_string((msg[0] << 8) | msg[1]));
+            model->set(BATT, to_string(((float)((msg[0] << 8) | msg[1]))/1000));
             break;
         case BMS_PRIM_ID:
             model->set(SOC, to_string((uint8_t)msg[0]));
@@ -46,6 +45,7 @@ void can_reader::gather(){
         case MCS_INTERNAL_STATE_ID:
             model->set(MCS, mc_states[msg[0]]);
             break;
+        // TODO write telemetry data case(s)
     }
 }
 

@@ -28,7 +28,7 @@ enum op_mode{
 #define WATERT "WATERT"
 #define OILP "OILP"
 #define GEAR "GEAR"
-#define SPEED "SPEED"
+#define SPEED "SPEED" // convert to mph for telemetry
 #define BATT "BATT"
 #define AIRT "AIRT"
 #define AUTOUP "AUTOUP"
@@ -40,13 +40,25 @@ enum op_mode{
 #define SOC "SOC"
 #define MCS "MCS" // motor controller state
 
+// telemetry
+#define BRAKEP "BRAKEP" // integer psi or bar 0 - 3000psi
+#define SANGLE "SANGLE" // 1dec deg -90 - 90
+#define LTIME "LTIME" // 3 decimal 4s - 5min+
+// also uses GEAR
+
 /**
 * The following are CAN ids that devices on the bus send
 **/
 
 // Engine Control Unit (c car)
 #define ECU_PRIM_ID 0x00FF
-#define ECU_SEC_ID 0x00FC
+#define ECU_SEC_ID 0x00FE
+// byte 3-4 little end brakeP front/200 bar
+// byte 5-6 little end brakeP rear/200 bar
+#define ECU_TER_ID 0x00FD // SANGLE LTIME
+// 0-1 signed 16bit int
+// 2-5 unsigned 32 bit int * 0.1
+
 
 // Tire Temp sensors
 #define TT_FRONT_ID 0x03F2
@@ -95,7 +107,8 @@ static string mc_states[16] = {
 
 #define SHIFT_MSG_ID 0x001
 
-void ecu_up();
-void ecu_down();
+#define TELEMETRY_PORT "/dev/ttyUSB0"
+#define GPS_PORT "/dev/ttyS0"
+#define GPS_ID 0x00AA
 
 #endif
