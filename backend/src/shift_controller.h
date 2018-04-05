@@ -1,7 +1,6 @@
 #ifndef SHIFT_CONTROLLER_H
 #define SHIFT_CONTROLLER_H
 #include <mutex>
-#include <unistd.h>
 #include "dashboard.h"
 #include "dash_model.h"
 #include "CAN.h"

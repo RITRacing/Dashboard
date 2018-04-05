@@ -13,8 +13,8 @@
 #include "GPS.h"
 using namespace std;
 
-informer * inf; // the object that collects data and sends to dash
 shift_controller * shiftc;
+informer * inf; // the object that collects data and sends to dash
 
 /**
 * Called on SIGINT, ends program

@@ -1,6 +1,8 @@
 #include "informer.h"
 #include "dashboard.h"
 #include "dash_model.h"
+#include "gps.h"
+#include "MPU6050.h"
 #include <pthread.h>
 using namespace std;
 
@@ -39,10 +41,7 @@ void informer::loop(){
     while(shouldContinue){
         gather(); // get the info
         model->update_frontend(); // send the info
-        if(timer % 10){
-            model->update_ground_station();
-            timer &= 0;
-        }
+        model->update_ground_station();
         ++timer;
     }
 }
@@ -52,4 +51,26 @@ void informer::loop(){
 **/
 void informer::finish(){
     shouldContinue = false;
+}
+
+void * gps_routine(void * p){
+    CAN can = *((CAN*)p);
+    gps_init();
+    MPU6050 mpu;
+    mpu.initialize();
+    int16_t ax, ay; // acceleration in x and y
+    int16_t az; // z axis, unused
+    loc_t current;
+    while(1){
+        // calculation
+
+
+        //mpu.getAcceleration(&ax, &ay, &az);
+        //gps_location(&current);
+
+
+        //printf("latitude: %lf\nlongitude: %lf\n speed: %lf\n angle: %lf\n\n",
+                //current.latitude, current.longitude, current.speed, current.course);
+        SLEEP(.1);
+    }
 }

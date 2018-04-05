@@ -3,6 +3,7 @@
 
 #include <string>
 #include <mutex>
+#include <unistd.h>
 using namespace std;
 
 #define USAGE_STRING "Usage: ./dashboard -m <op_mode>\n -f <testfile> (if op_mode testdata)\n";
@@ -75,7 +76,7 @@ enum op_mode{
 #define BMS_FLAGS_ID 0x0622
 
 // Indication of current motor controller state
-#define MCS_INTERNAL_STATE_ID 0x00AA
+#define MCS_INTERNAL_STATE_ID 0x0093
 
 /**
 * Array of level faults used to quickly determine fault from 8 bit value
@@ -94,22 +95,22 @@ static string lfaults[8] = {"plug",
 * state code.
 **/
 static string mc_states[16] = {
-	"VSM Start",
-	"Pre-charge Init",
-	"Pre-charge Active",
-	"Pre-charge Complete",
-	"VSM Wait",
-	"VSM Ready",
-	"Motor Running",
-	"Blink Fault Code",
-	"Invalid State",
-	"Invalid State",
-	"Invalid State",
-	"Invalid State",
-	"Invalid State",
-	"Invalid State",
-	"Shutdown in Process",
-	"Recycle Power"
+	"0 VSM Start",
+	"1 Pre-charge Init",
+	"2 Pre-charge Active",
+	"3 Pre-charge Complete",
+	"4 VSM Wait",
+	"5 VSM Ready",
+	"6 Motor Running",
+	"7 Blink Fault Code",
+	"8 Invalid State",
+	"9 Invalid State",
+	"10 Invalid State",
+	"11 Invalid State",
+	"12 Invalid State",
+	"13 Invalid State",
+	"14 Shutdown in Process",
+	"15 Recycle Power"
 };
 
 #define SHIFT_MSG_ID 0x001

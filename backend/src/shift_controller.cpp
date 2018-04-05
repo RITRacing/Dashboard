@@ -49,12 +49,12 @@ void shift_controller::shift(bool up){
     mx.lock();
     if(up){
         if(model->gear() < MAX_GEAR){
-            shift_msg[0] |= UPSHIFT_MSG;
+            msgmx.lock(); shift_msg[0] = UPSHIFT_MSG; msgmx.unlock();
         }
     }else{
         if((model->gear() == 1 && model->speed() < SPEED_LOCKOUT) ||
             model->gear() > 1){
-                msgmx.lock(); shift_msg[0] |= DOWNSHIFT_MSG; msgmx.unlock();
+                msgmx.lock(); shift_msg[0] = DOWNSHIFT_MSG; msgmx.unlock();
         }
     }
     mx.unlock();
@@ -112,7 +112,7 @@ void shift_controller::send_ecu_msg(){
 void * trigger_shift(void* p){
     bool upon = shiftc->pressed(UP);
     bool downon = shiftc->pressed(DOWN);
-
+    cout << "paddle callback" << endl;
     // check if both are down, then check upshifter, then downshifter
     if(upon && downon){
             SLEEP(AUTOUP_HOLD);

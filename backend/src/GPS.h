@@ -1,29 +1,32 @@
-#ifndef GPS_H
-#define GPS_H
-#include <mutex>
-#include <map>
-using namespace std;
-
-// different keys for the returned map
-#define LATITUDE "LATITUDE"
-#define LONGITUDE "LONGITUDE"
-#define VELOCITY "VELOCITY"
-#define ANGLE "ANGLE"
-
-/**
-* Encapsulates GPS serial reading
-**/
-class GPS{
-private:
-    mutex mx; // prevents serial reading errors
-    int fd; // file descriptor for GPS socket
-    map<string,float> current; // map containing current values from GPS
-public:
-    GPS(); // constructor
-    void read_sentence(); // reads a GPRMC sentence
-    map<string, float> get_current(); // returns the latest GPRMC data
+#ifndef _GPS_H_
+#define _GPS_H_
+extern "C"{
+struct location {
+    double latitude;
+    double longitude;
+    double speed;
+    double altitude;
+    double course;
 };
+typedef struct location loc_t;
 
-extern void * gps_routine(void * p); // loops sending GPS data to CAN
+// Initialize device
+extern void gps_init(void);
+// Activate device
+extern void gps_on(void);
+// Get the actual location
+extern void gps_location(loc_t *);
 
+
+// Turn off device (low-power consumption)
+extern void gps_off(void);
+
+// -------------------------------------------------------------------------
+// Internal functions
+// -------------------------------------------------------------------------
+
+// convert deg to decimal deg latitude, (N/S), longitude, (W/E)
+void gps_convert_deg_to_dec(double *, char, double *, char);
+double gps_deg_dec(double);
+}
 #endif

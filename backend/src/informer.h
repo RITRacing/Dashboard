@@ -4,7 +4,6 @@
 #include "dashboard.h"
 #include "dash_model.h"
 #include "CAN.h"
-#include "GPS.h"
 
 /**
 * Class with pure virtual member that controls the process of getting vehicle
@@ -54,5 +53,7 @@ class test_reader: public informer{
         ifstream filein;
         void gather();
 };
+
+extern void * gps_routine(void * p);
 
 #endif

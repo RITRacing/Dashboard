@@ -69,7 +69,7 @@ dash_model::dash_model(int port){
     telefd = open(TELEMETRY_PORT, O_RDWR | O_NOCTTY | O_NDELAY);
     if(telefd == -1){
         perror("could not open socket to xbee");
-        exit(EXIT_FAILURE);
+      //  exit(EXIT_FAILURE);
     }
 
     // create the serial port options struct
@@ -132,7 +132,6 @@ void dash_model::update_frontend(){
     if(outgoing.size() > 0){
         string jstring = json_from_map(outgoing);
         const char * json = jstring.c_str();
-        cout << json << endl;
         send(frontfd, json, strlen(json),0);
         outgoing.clear();
     }
@@ -144,7 +143,8 @@ void dash_model::update_frontend(){
 **/
 void dash_model::update_ground_station(){
     modelmx.lock();
-    const char * json = json_from_map(status).c_str();
+    string jstring = json_from_map(status);
+    const char * json = jstring.c_str();
     write(telefd, json, strlen(json));
     modelmx.unlock();
 }
