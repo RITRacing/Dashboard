@@ -34,6 +34,21 @@
 using namespace std;
 
 /**
+* Encapsulates control to the racepack
+**/
+class racepack{
+private:
+    // output pins
+    int up_pin;
+    int down_pin;
+public:
+    racepack(int up, int dn);
+    void start_upshift();
+    void start_downshift();
+    void stop_shifting();
+};
+
+/**
 * Encapsulates access to and facilitates shift operations
 **/
 class shift_controller{
@@ -45,8 +60,10 @@ private:
     bool autoup_status;
     CAN * can;
     int count; // count for message sending routine
+    racepack * pack;
 public:
-    shift_controller(dash_model *m, CAN * c, int upl, int downl);
+    shift_controller(dash_model *m, CAN * c, int upl, int downl, int upout,
+        int downout);
     inline void send_ecu_msg();
     void shift(bool up);
     bool is_autoup();

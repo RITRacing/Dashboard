@@ -40,7 +40,8 @@ void initialize(op_mode mode, string filename){
     pthread_create(&gpsthread, NULL, gps_routine, can);
 
     // create and start the shift_controller
-    shiftc = new shift_controller(&model, can, UP_LISTEN, DOWN_LISTEN);
+    shiftc = new shift_controller(&model, can, UP_LISTEN, DOWN_LISTEN,
+        UP_OUT, DOWN_OUT);
 
     // set up information gathering, sending
 	inf = informer::get_informer(mode, filename, can);
