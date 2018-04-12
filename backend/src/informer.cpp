@@ -4,6 +4,10 @@
 #include "gps.h"
 #include "MPU6050.h"
 #include <pthread.h>
+#include <stdio.h>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 using namespace std;
 
 /**
@@ -54,25 +58,26 @@ void informer::finish(){
 }
 
 void * gps_routine(void * p){
-    /*
-    CAN can = *((CAN*)p);
+    // generate file name
+    auto t = time(nullptr);
+    auto tm = localtime(&t);
+    string filename;
+    stringstream ss;
+    ss << put_time(tm, "%d-%m-%Y_%H-%M");
+    filename = ss.str();
+    FILE * fileout = fopen(filename.c_str(), "w");
+    //CAN can = *((CAN*)p);
     gps_init();
-    MPU6050 mpu;
-    mpu.initialize();
-    int16_t ax, ay; // acceleration in x and y
-    int16_t az; // z axis, unused
+    //MPU6050 mpu;
+    //mpu.initialize();
+    //int16_t ax, ay; // acceleration in x and y
+    //int16_t az; // z axis, unused
     loc_t current;
     while(1){
-        // calculation
-
-
-        //mpu.getAcceleration(&ax, &ay, &az);
-        //gps_location(&current);
-
-
-        //printf("latitude: %lf\nlongitude: %lf\n speed: %lf\n angle: %lf\n\n",
-                //current.latitude, current.longitude, current.speed, current.course);
+        gps_location(&current);
+        fprintf(fileout, "%f, %f, %f, %f", current.latitude, current.longitude,
+            current.speed, current.course);
         SLEEP(.1);
     }
-    */
+
 }

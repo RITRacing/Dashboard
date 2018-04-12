@@ -31,7 +31,13 @@ void can_reader::gather(){
                 | msg[7])/10));
             break;
         case ECU_SEC_ID:
-            model->set(BATT, to_string(((float)((msg[0] << 8) | msg[1]))/1000));
+            {
+                float exact = (msg[0] << 8) | msg[1];
+                int rnd = (exact+.05) * 10; // round
+                float desired = rnd / 10.0; // float division
+                //model->set(BATT, to_string(((float)((msg[0] << 8) | msg[1]))/1000));
+                model->set(BATT, to_string(desired));
+            }
             break;
         case BMS_PRIM_ID:
             model->set(SOC, to_string((uint8_t)msg[0]));
