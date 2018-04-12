@@ -19,13 +19,17 @@
 #define UP_LISTEN 4
 #define DOWN_LISTEN 5
 
+// output pins
+#define UP_OUT 2
+#define DOWN_OUT 3
+
 // shift intent messages for greedy ECU
 #define UPSHIFT_MSG 0x02
 #define DOWNSHIFT_MSG 0x01
 #define NOSHIFT_MSG 0x00
 
 // number of up or down intent messages to feed greedy ECU per shift
-#define SHIFT_MSG_COUNT 50
+#define SHIFT_MSG_COUNT 10
 
 using namespace std;
 

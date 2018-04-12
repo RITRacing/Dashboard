@@ -1,6 +1,7 @@
 #include "shift_controller.h"
 #include "wiringPi.h"
 #include "dashboard.h"
+#include "CAN.h"
 #include <iostream>
 #include <pthread.h>
 using namespace std;
@@ -36,8 +37,13 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl){
     pthread_create(&auto_thread, NULL, autup_routine, NULL);
     pthread_detach(auto_thread);
 
+    // set up outputs
+    pinMode(UP_OUT, OUTPUT); pinMode(DOWN_OUT, OUTPUT);
+
     // set up paddle interrupts
     pinMode(up_listen, INPUT); pinMode(down_listen, INPUT);
+    pullUpDnControl(up_listen, PUD_UP);
+    pullUpDnControl(down_listen, PUD_UP);
     wiringPiISR(up_listen, INT_EDGE_FALLING, &paddle_callback);
     wiringPiISR(down_listen, INT_EDGE_FALLING, &paddle_callback);
 }
@@ -49,12 +55,22 @@ void shift_controller::shift(bool up){
     mx.lock();
     if(up){
         if(model->gear() < MAX_GEAR){
-            msgmx.lock(); shift_msg[0] = UPSHIFT_MSG; msgmx.unlock();
+            msgmx.lock();
+            shift_msg[0] = UPSHIFT_MSG;
+            char rpmsg[8] = {1,0,0,0,0,0,0,0};
+            can->write_msg(0x456, rpmsg);
+            digitalWrite(UP_OUT, HIGH);
+            msgmx.unlock();
         }
     }else{
         if((model->gear() == 1 && model->speed() < SPEED_LOCKOUT) ||
             model->gear() > 1){
-                msgmx.lock(); shift_msg[0] = DOWNSHIFT_MSG; msgmx.unlock();
+                msgmx.lock();
+                shift_msg[0] = DOWNSHIFT_MSG;
+                char rpmsg[8] = {0,0,1,0,0,0,0,0};
+                can->write_msg(0x456, rpmsg);
+                digitalWrite(DOWN_OUT, HIGH);
+                msgmx.unlock();
         }
     }
     mx.unlock();
@@ -101,6 +117,8 @@ void shift_controller::send_ecu_msg(){
         ++count;
     }
     if(count == SHIFT_MSG_COUNT){
+        digitalWrite(UP_OUT, LOW);
+        digitalWrite(DOWN_OUT, LOW);
         count = 0;
         shift_msg[0] = NOSHIFT_MSG;
     }
@@ -110,6 +128,7 @@ void shift_controller::send_ecu_msg(){
 * Determine which kindof shift is happenening and execute it
 **/
 void * trigger_shift(void* p){
+    SLEEP(.01);
     bool upon = shiftc->pressed(UP);
     bool downon = shiftc->pressed(DOWN);
     cout << "paddle callback" << endl;
@@ -156,6 +175,6 @@ void * message_routine(void* p){
         msgmx.lock();
         shiftc->send_ecu_msg();
         msgmx.unlock();
-        usleep(1000);
+        usleep(500);
     }
 }

@@ -56,13 +56,14 @@ enum op_mode{
 
 // Engine Control Unit (c car)
 #define ECU_PRIM_ID 0x00FF
-#define ECU_SEC_ID 0x00FE
+#define ECU_SEC_ID 0x00FC
 // byte 3-4 little end brakeP front/200 bar
 // byte 5-6 little end brakeP rear/200 bar
 #define ECU_TER_ID 0x00FD // SANGLE LTIME
 // 0-1 signed 16bit int
 // 2-5 unsigned 32 bit int * 0.1
 
+#define ECU_QUAT_ID 0x00FB
 
 // Tire Temp sensors
 #define TT_FRONT_ID 0x03F2
@@ -113,7 +114,7 @@ static string mc_states[16] = {
 	"15 Recycle Power"
 };
 
-#define SHIFT_MSG_ID 0x001
+#define SHIFT_MSG_ID 0x610
 
 #define TELEMETRY_PORT "/dev/ttyUSB0"
 #define GPS_PORT "/dev/ttyS0"

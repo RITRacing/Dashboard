@@ -54,6 +54,7 @@ void informer::finish(){
 }
 
 void * gps_routine(void * p){
+    /*
     CAN can = *((CAN*)p);
     gps_init();
     MPU6050 mpu;
@@ -73,4 +74,5 @@ void * gps_routine(void * p){
                 //current.latitude, current.longitude, current.speed, current.course);
         SLEEP(.1);
     }
+    */
 }

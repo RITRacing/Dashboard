@@ -121,7 +121,7 @@ function updateData(data){
         setCEL(watert.value, oilp.value);
     }
     if("BATT" in data){
-        volt.update(data["BATT"]);
+        volt.update(data["BATT"].substring(0,4));
     }
     if("RPM" in data){
         rpm.update(data["RPM"]);
