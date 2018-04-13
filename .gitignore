@@ -5,3 +5,4 @@ backend/.DS_Store
 backend/.idea
 backend/src/*.pyc
 backend/src/__pycache__
+backend/src/dashboard
