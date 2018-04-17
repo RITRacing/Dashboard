@@ -1,5 +1,7 @@
+try{
 var fs = require("fs");
 var net = require("net");
+var child = require("child_process");
 var contents = fs.readFileSync("/home/dash/f26dash/frontend/settings.json");
 var settings = JSON.parse(contents);
 
@@ -45,6 +47,13 @@ if(backgroundColor == "white"){
     textColor = "black";
 }
 panel.addElement(background);
+
+function restart(){
+    child.exec("sudo systemctl restart dash_backend");
+    setTimeout(function(){
+        child.exec("sudo systemctl restart dash_frontend");
+    }, 3000);
+}
 
 //instantiate DashValues, but don't point them to visuals,
 //that is the job of the sub-classes
@@ -113,7 +122,7 @@ function updateData(data){
         oilt.update(data["OILT"]);
     }
     if("OILP" in data){
-        oilp.update(data["OILP"]);
+        oilp.update(data["OILP"].substring(0,3));
         setCEL(watert.value, oilp.value);
     }
     if("WATERT" in data){
@@ -227,18 +236,28 @@ client.connect(8787, "127.0.0.1", function(){
     console.log("setup socket");
 });
 
+client.on("error", function(err){
+    restart();
+});
+
 var chunk = "";
 client.on('data', function(data) {
-    chunk += data.toString(); // Add string on the end of the variable 'chunk'
-    var d_index = chunk.indexOf('@'); // Find the delimiter
+    try{
+        chunk += data.toString(); // Add string on the end of the variable 'chunk'
+        var d_index = chunk.indexOf('@'); // Find the delimiter
 
-    // While loop to keep going until no delimiter can be found
-    while (d_index > -1) {
-        var json = JSON.parse(chunk.substring(0,d_index)); // Parse the current string
-        updateData(json); // Function that does something with the current chunk of valid json.
+        // While loop to keep going until no delimiter can be found
+        while (d_index > -1) {
+            var json = JSON.parse(chunk.substring(0,d_index)); // Parse the current string
+            updateData(json); // Function that does something with the current chunk of valid json.
 
-        chunk = chunk.substring(d_index+1); // Cuts off the processed chunk
-        d_index = chunk.indexOf('@'); // Find the new delimiter
+            chunk = chunk.substring(d_index+1); // Cuts off the processed chunk
+            d_index = chunk.indexOf('@'); // Find the new delimiter
+        }
+    }catch(err){
+        restart();
     }
-
 });
+}catch(err){
+    restart();
+}

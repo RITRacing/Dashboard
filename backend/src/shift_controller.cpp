@@ -31,7 +31,7 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl,
     autoup_status = false;
 
     // create racepack
-    *pack = racepack(upo, downo);
+    pack = new racepack(upo, downo);
 
     // start message and auto-up threads
     pthread_t msg_thread, auto_thread;
@@ -111,7 +111,9 @@ bool shift_controller::pressed(bool up){
 **/
 bool shift_controller::auto_should_shift(){
     int rpm = model->rpm();
-    return autoup_status && rpm != -1 && rpm >= AUTOUP_TRIGGER;
+    int gear = model->gear();
+    return autoup_status && rpm >= AUTOUP_TRIGGER && gear < MAX_GEAR;
+    //return autoup_status;
 }
 
 /**
@@ -135,7 +137,7 @@ void shift_controller::send_ecu_msg(){
 * Determine which kindof shift is happenening and execute it
 **/
 void * trigger_shift(void* p){
-    SLEEP(.01);
+    SLEEP(.05);
     bool upon = shiftc->pressed(UP);
     bool downon = shiftc->pressed(DOWN);
     cout << "paddle callback" << endl;
@@ -182,7 +184,7 @@ void * message_routine(void* p){
         msgmx.lock();
         shiftc->send_ecu_msg();
         msgmx.unlock();
-        usleep(500);
+        usleep(1000);
     }
 }
 
@@ -194,15 +196,16 @@ racepack::racepack(int up, int dn){
     down_pin = dn;
 
     pinMode(up_pin, OUTPUT); pinMode(down_pin, OUTPUT);
-    digitalWrite(up_pin, LOW); digitalWrite(down_pin, LOW);
+    //digitalWrite(up_pin, LOW); digitalWrite(down_pin, LOW);
+    stop_shifting();
 }
 
 /**
 * Set both outputs to LOW
 **/
 void racepack::stop_shifting(){
-    digitalWrite(up_pin, LOW);
-    digitalWrite(down_pin, LOW);
+    digitalWrite(up_pin, HIGH);
+    digitalWrite(down_pin, HIGH);
 }
 
 /**
@@ -210,7 +213,7 @@ void racepack::stop_shifting(){
 **/
 void racepack::start_upshift(){
     stop_shifting();
-    digitalWrite(up_pin, HIGH);
+    digitalWrite(up_pin, LOW);
 }
 
 /**
@@ -218,5 +221,5 @@ void racepack::start_upshift(){
 **/
 void racepack::start_downshift(){
     stop_shifting();
-    digitalWrite(down_pin, HIGH);
+    digitalWrite(down_pin, LOW);
 }

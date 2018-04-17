@@ -25,14 +25,14 @@ void can_reader::gather(){
             model->set(RPM, to_string((msg[0] << 8) | msg[1]));
             model->set(OILT, to_string((uint8_t)msg[2]));
             model->set(WATERT, to_string((uint8_t)msg[3]));
-            model->set(OILP, to_string((uint8_t)msg[4]/10));
+            model->set(OILP, to_string((uint8_t)msg[4]/10.0));
             model->set(GEAR, to_string((uint8_t)msg[5]));
             model->set(SPEED, to_string(((((uint16_t)msg[6]) << 8)
                 | msg[7])/10));
             break;
         case ECU_SEC_ID:
             {
-                float exact = (msg[0] << 8) | msg[1];
+                float exact = ((msg[0] << 8) | msg[1]) / 1000.0;
                 int rnd = (exact+.05) * 10; // round
                 float desired = rnd / 10.0; // float division
                 //model->set(BATT, to_string(((float)((msg[0] << 8) | msg[1]))/1000));

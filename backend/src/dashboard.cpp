@@ -10,7 +10,6 @@
 #include <cstdlib>
 #include <thread>
 #include "wiringPi.h"
-#include "GPS.h"
 using namespace std;
 
 shift_controller * shiftc;
@@ -30,7 +29,7 @@ void sigint_handle(int signal){
  **/
 void initialize(op_mode mode, string filename){
     wiringPiSetupGpio();
-
+    cout << "Waiting for frontend..." << endl;
 	dash_model model(PORT); // create model, waits for server to connect
 
     CAN * can = new CAN(); // connect to can0
