@@ -1,5 +1,3 @@
-
-
 /**
     Contains a value from the ECU, maintains a visual.
 **/
@@ -221,6 +219,8 @@ function IncrementalRPMMeter(min,max,incr,redval,blinkval,backgroundBlink){
             }
         }
         // put background color back to normal OR turn on background blinking
+        // currently disabled
+        /*
         if(val >= 11000 && backgroundBlink){
             backon = true;
         }else{
@@ -236,6 +236,7 @@ function IncrementalRPMMeter(min,max,incr,redval,blinkval,backgroundBlink){
         }else{
             this.animator.pause();
         }
+        */
     }
 
     this.destroy = function(){

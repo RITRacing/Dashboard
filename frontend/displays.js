@@ -109,8 +109,9 @@ EParkDisplay.prototype.show = function(){
     current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit,textColor));
     lfaulttext.setVisual(new StatLabel(width - 10, 10, 35,
         lfaulttext.name, lfaulttext.unit,textColor));
-    lfault.setVisual(new Indicator("", 3 * width/4, height/2, height/8,
+    lfault.setVisual(new Indicator("", 3 * width/4, height/4, height/8,
     lfault.min, lfault.max));
+    mcstate.setVisual(new StatLabel(width-20, 3*height/4-70, 30, mcstate.name, mcstate.unit, textColor));
 }
 
 /**
@@ -126,6 +127,7 @@ EDriveDisplay.prototype.constructor = EDriveDisplay;
 EDriveDisplay.prototype.show = function(){
     soc.setVisual(new StatLabel(width/4,height/4,70,soc.name,soc.unit,textColor));
     current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit,textColor));
-    lfault.setVisual(new Indicator("", 3 * width/4, height/2, height/8,
+    lfault.setVisual(new Indicator("", 3 * width/4, height/4, height/8,
     lfault.min, lfault.max));
+    mcstate.setVisual(new StatLabel(width-20, 3*height/4-70, 30, mcstate.name, mcstate.unit, textColor));
 }
