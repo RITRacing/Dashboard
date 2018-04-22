@@ -131,3 +131,15 @@ EDriveDisplay.prototype.show = function(){
     lfault.min, lfault.max));
     mcstate.setVisual(new StatLabel(width-20, 3*height/4-70, 30, mcstate.name, mcstate.unit, textColor));
 }
+
+var SecParkDisplay = function(){
+    Display.apply(this);
+}
+
+SecParkDisplay.prototype = Object.create(Display.prototype);
+SecParkDisplay.prototype.constructor = SecParkDisplay;
+
+SecParkDisplay.prototype.show = function(){
+    gearp.setVisual(new StatLabel(width/7,height/4,50,gearp.name, gearp.unit,textColor));
+    gearv.setVisual(new StatLabel(width/7,height/2,50,gearv.name,gearv.unit,textColor));
+}

@@ -37,6 +37,7 @@ enum op_mode{
 #define AIRT "AIRT"
 #define AUTOUP "AUTOUP"
 #define LAMBDACTL "LAMBDACTL"
+#define FLC "FLC"
 
 // e car
 #define CURRENT "CURRENT"
@@ -49,6 +50,10 @@ enum op_mode{
 #define SANGLE "SANGLE" // 1dec deg -90 - 90
 #define LTIME "LTIME" // 3 decimal 4s - 5min+
 // also uses GEAR
+
+// second screen
+#define GEARP "GEARP"
+#define GEARV "GEARV"
 
 /**
 * The following are CAN ids that devices on the bus send
@@ -64,6 +69,8 @@ enum op_mode{
 // 2-5 unsigned 32 bit int * 0.1
 
 #define ECU_QUAT_ID 0x00FB
+// byte 0 is lambdactl boolean
+// byte	1 is flc, to convert value/128
 
 // Tire Temp sensors
 #define TT_FRONT_ID 0x03F2

@@ -49,8 +49,13 @@ void informer::loop(){
         //sd_notify (0, "WATCHDOG=1"); // ping systemd
         gather(); // get the info
         model->update_frontend(); // send the info
-        model->update_ground_station();
+        /*
+        if(timer == 10){
+            model->update_ground_station();
+            timer = 0;
+        }
         ++timer;
+        */
     }
 }
 

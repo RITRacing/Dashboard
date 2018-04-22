@@ -58,7 +58,8 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl,
 void shift_controller::shift(bool up){
     mx.lock();
     if(up){
-        if(model->gear() < MAX_GEAR){
+        if(true){//model->gear() < MAX_GEAR){
+            cout << "upshifting" << endl;
             msgmx.lock();
             shift_msg[0] = UPSHIFT_MSG;
             //char rpmsg[8] = {1,0,0,0,0,0,0,0};
@@ -68,8 +69,8 @@ void shift_controller::shift(bool up){
             msgmx.unlock();
         }
     }else{
-        if((model->gear() == 1 && model->speed() < SPEED_LOCKOUT) ||
-            model->gear() > 1){
+        if(true){//)(model->gear() == 1 && //model->speed() < SPEED_LOCKOUT) ||
+            //model->gear() > 1){
                 msgmx.lock();
                 shift_msg[0] = DOWNSHIFT_MSG;
                 //char rpmsg[8] = {0,0,1,0,0,0,0,0};

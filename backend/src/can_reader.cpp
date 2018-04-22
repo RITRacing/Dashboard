@@ -39,6 +39,9 @@ void can_reader::gather(){
                 model->set(BATT, to_string(desired));
             }
             break;
+        case ECU_QUAT_ID:
+            model->set(LAMBDACTL, to_string(msg[0]));
+            model->set(FLC, to_string(msg[1]/128.0));
         case BMS_PRIM_ID:
             model->set(SOC, to_string((uint8_t)msg[0]));
             break;

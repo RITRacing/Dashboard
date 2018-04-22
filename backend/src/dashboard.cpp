@@ -31,7 +31,7 @@ void initialize(op_mode mode, string filename){
     wiringPiSetupGpio();
     cout << "Waiting for frontend..." << endl;
 	dash_model model(PORT); // create model, waits for server to connect
-
+    cout << "frontend connected" << endl;
     CAN * can = new CAN(); // connect to can0
 
     // start the GPS thread

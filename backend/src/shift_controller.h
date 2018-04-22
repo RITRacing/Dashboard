@@ -16,7 +16,7 @@
 #define SHIFT_HOLD 0.2 // sec
 
 // paddle pins
-#define UP_LISTEN 4
+#define UP_LISTEN 17
 #define DOWN_LISTEN 5
 
 // output pins

@@ -93,6 +93,10 @@ var hold = new DashValue("Hold", "", 0, 1);
 dashValues[dashValues.length] = hold;
 var cel = new DashValue("", "", 0, 1);
 dashValues[dashValues.length] = cel;
+var gearp = new DashValue("GearP", "bar", 0, 5);
+dashValues[dashValues.length] = gearp;
+var gearv = new DashValue("GearV", "v", 0, 5);
+dashValues[dashValues.length] = gearv;
 
 // updates visuals based on data received
 function setCEL(wt, op){
@@ -141,14 +145,17 @@ function updateData(data){
         gear.update(data["GEAR"]);
         if(gear.value == 0)
             gear.value = "N";
-        if(gear.value == "N" && currentDisplay == driveDisplay){
-            driveDisplay.hide();
-            currentDisplay = parkDisplay;
-            parkDisplay.show();
-        }else if(gear.value != "N" && currentDisplay == parkDisplay){
-            parkDisplay.hide();
-            currentDisplay = driveDisplay;
-            driveDisplay.show();
+        if(carType != 't'){
+            if(gear.value == "N" && currentDisplay == driveDisplay){
+                driveDisplay.hide();
+                currentDisplay = parkDisplay;
+                parkDisplay.show();
+            }else if(gear.value != "N" && (currentDisplay == parkDisplay
+                || currentDisplay == secondaryDisplay)){
+                parkDisplay.hide();
+                currentDisplay = driveDisplay;
+                driveDisplay.show();
+            }
         }
     }
     if("SOC" in  data){
@@ -181,21 +188,29 @@ function updateData(data){
             autoup.update(0);
     }
 
-    if("lctl" in data){
+    if("LCTL" in data){
         console.log("LAMBDACTL in data!");
-        if(data["lctl"])
-            lambdactl.update(1);
-        else {
+        if(data["LCTL"] == "0")
             lambdactl.update(0);
+        else {
+            lambdactl.update(1);
         }
     }
     if("FLC" in data){
         console.log("FLC in data!");
-        flc.update(data["FLC"]);
+        flc.update(data["FLC"].substring(0,4));
     }
 
     if("MCS" in  data){
         mcstate.update(data["MCS"]);
+    }
+
+    if ("GEARP" in data){
+        gearp.update(data["GEARP"]);
+    }
+
+    if ("GEARV" in data){
+        gearv.update(data["GEARV"]);
     }
 
     if(watert.value < 50 || lambdactl.value == 0){
@@ -218,17 +233,36 @@ function getDashLabel(name, x, y, size, color){
 var parkDisplay;
 var driveDisplay;
 var currentDisplay;
+var secondaryDisplay;
 if(carType == 'c'){
     parkDisplay = new MinParkDisplay();
+    secondaryDisplay = new SecParkDisplay();
     driveDisplay = new DriveDisplay();
     currentDisplay = parkDisplay;
-}else{
+}else if(carType == 'e'){
     parkDisplay = new EParkDisplay();
     driveDisplay = new EDriveDisplay();
     currentDisplay = parkDisplay;
+}else if(carType == 't'){
+    currentDisplay = new TelemetryDisplay();
 }
 
 currentDisplay.show();
+
+function switchDisplay(eventArgs){
+    if(currentDisplay == parkDisplay){
+        currentDisplay.hide();
+        currentDisplay = secondaryDisplay;
+        currentDisplay.show();
+    }else if(currentDisplay == secondaryDisplay){
+        currentDisplay.hide();
+        currentDisplay = parkDisplay;
+        currentDisplay.show();
+    }
+}
+
+panel.addClickListener(switchDisplay);
+
 var client = new net.Socket();
 
 client.connect(8787, "127.0.0.1", function(){
@@ -255,9 +289,11 @@ client.on('data', function(data) {
             d_index = chunk.indexOf('@'); // Find the new delimiter
         }
     }catch(err){
+        console.log(err);
         restart();
     }
 });
 }catch(err){
+    console.log(err);
     restart();
 }
