@@ -97,6 +97,8 @@ var gearp = new DashValue("GearP", "bar", 0, 100);
 dashValues[dashValues.length] = gearp;
 var gearv = new DashValue("GearV", "v", 0, 5);
 dashValues[dashValues.length] = gearv;
+var speed = new DashValue("Speed", "kph", 0, 10000);
+dashValues[dashValues.length] = speed;
 
 // updates visuals based on data received
 function setCEL(wt, op){
@@ -211,6 +213,10 @@ function updateData(data){
 
     if ("GEARV" in data){
         gearv.update(data["GEARV"].substring(0,5));
+    }
+
+    if("SPEED" in data){
+        speed.update(data["SPEED"]);
     }
 
     if(watert.value < 50 || lambdactl.value == 0){

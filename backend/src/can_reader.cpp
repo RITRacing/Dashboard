@@ -35,7 +35,6 @@ void can_reader::gather(){
                 float exact = ((msg[0] << 8) | msg[1]) / 1000.0;
                 int rnd = (exact+.05) * 10; // round
                 float desired = rnd / 10.0; // float division
-                //model->set(BATT, to_string(((float)((msg[0] << 8) | msg[1]))/1000));
                 model->set(BATT, to_string(desired));
             }
             break;
@@ -43,7 +42,6 @@ void can_reader::gather(){
         {
             model->set(LAMBDACTL, to_string(msg[0]));
             model->set(FLC, to_string(msg[1]/128.0));
-            //uint16_t gp = msg[3];
             model->set(GEARP, to_string(((msg[3] << 8) | msg[2])/200.0));
             model->set(GEARV, to_string(((msg[5] << 8) | msg[4])/1000.0));
             break;

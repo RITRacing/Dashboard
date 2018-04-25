@@ -132,6 +132,10 @@ EDriveDisplay.prototype.show = function(){
     mcstate.setVisual(new StatLabel(width-20, 3*height/4-70, 30, mcstate.name, mcstate.unit, textColor));
 }
 
+/**
+* Display the frontend switches to when tapped
+* Contains gear pressure and gear voltage
+**/
 var SecParkDisplay = function(){
     Display.apply(this);
 }
