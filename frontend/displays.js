@@ -140,6 +140,6 @@ SecParkDisplay.prototype = Object.create(Display.prototype);
 SecParkDisplay.prototype.constructor = SecParkDisplay;
 
 SecParkDisplay.prototype.show = function(){
-    gearp.setVisual(new StatLabel(width/7,height/4,50,gearp.name, gearp.unit,textColor));
-    gearv.setVisual(new StatLabel(width/7,height/2,50,gearv.name,gearv.unit,textColor));
+    gearp.setVisual(new StatLabel(width/2,height/4,50,gearp.name, gearp.unit,textColor));
+    gearv.setVisual(new StatLabel(width/2,height/2,50,gearv.name,gearv.unit,textColor));
 }

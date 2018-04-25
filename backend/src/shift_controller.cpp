@@ -58,24 +58,18 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl,
 void shift_controller::shift(bool up){
     mx.lock();
     if(up){
-        if(true){//model->gear() < MAX_GEAR){
+        if(!LOCKOUTS || (LOCKOUTS && model->gear() < MAX_GEAR){
             cout << "upshifting" << endl;
             msgmx.lock();
             shift_msg[0] = UPSHIFT_MSG;
-            //char rpmsg[8] = {1,0,0,0,0,0,0,0};
-            //can->write_msg(0x456, rpmsg);
-            //digitalWrite(UP_OUT, HIGH); // write to racepack
             pack->start_upshift();
             msgmx.unlock();
         }
     }else{
-        if(true){//)(model->gear() == 1 && //model->speed() < SPEED_LOCKOUT) ||
-            //model->gear() > 1){
+        if(!LOCKOUTS || LOCKOUTS && ((model->gear() == 1 && model->speed() < SPEED_LOCKOUT) ||
+            model->gear() > 1)){
                 msgmx.lock();
                 shift_msg[0] = DOWNSHIFT_MSG;
-                //char rpmsg[8] = {0,0,1,0,0,0,0,0};
-                //can->write_msg(0x456, rpmsg);
-                //digitalWrite(DOWN_OUT, HIGH);
                 pack->start_downshift();
                 msgmx.unlock();
         }
@@ -138,7 +132,7 @@ void shift_controller::send_ecu_msg(){
 * Determine which kindof shift is happenening and execute it
 **/
 void * trigger_shift(void* p){
-    SLEEP(.05);
+    //SLEEP(.05);
     bool upon = shiftc->pressed(UP);
     bool downon = shiftc->pressed(DOWN);
     cout << "paddle callback" << endl;

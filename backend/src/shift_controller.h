@@ -31,6 +31,8 @@
 // number of up or down intent messages to feed greedy ECU per shift
 #define SHIFT_MSG_COUNT 10
 
+#define LOCKOUTS false
+
 using namespace std;
 
 /**

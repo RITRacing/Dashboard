@@ -93,7 +93,7 @@ var hold = new DashValue("Hold", "", 0, 1);
 dashValues[dashValues.length] = hold;
 var cel = new DashValue("", "", 0, 1);
 dashValues[dashValues.length] = cel;
-var gearp = new DashValue("GearP", "bar", 0, 5);
+var gearp = new DashValue("GearP", "bar", 0, 100);
 dashValues[dashValues.length] = gearp;
 var gearv = new DashValue("GearV", "v", 0, 5);
 dashValues[dashValues.length] = gearv;
@@ -206,11 +206,11 @@ function updateData(data){
     }
 
     if ("GEARP" in data){
-        gearp.update(data["GEARP"]);
+        gearp.update(data["GEARP"].substring(0,4));
     }
 
     if ("GEARV" in data){
-        gearv.update(data["GEARV"]);
+        gearv.update(data["GEARV"].substring(0,5));
     }
 
     if(watert.value < 50 || lambdactl.value == 0){

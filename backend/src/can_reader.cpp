@@ -40,8 +40,14 @@ void can_reader::gather(){
             }
             break;
         case ECU_QUAT_ID:
+        {
             model->set(LAMBDACTL, to_string(msg[0]));
             model->set(FLC, to_string(msg[1]/128.0));
+            //uint16_t gp = msg[3];
+            model->set(GEARP, to_string(((msg[3] << 8) | msg[2])/200.0));
+            model->set(GEARV, to_string(((msg[5] << 8) | msg[4])/1000.0));
+            break;
+        }
         case BMS_PRIM_ID:
             model->set(SOC, to_string((uint8_t)msg[0]));
             break;
