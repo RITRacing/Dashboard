@@ -105,13 +105,17 @@ EParkDisplay.prototype = Object.create(Display.prototype);
 EParkDisplay.prototype.constructor = EParkDisplay;
 
 EParkDisplay.prototype.show = function(){
-    soc.setVisual(new StatLabel(width/4,height/4,70,soc.name,soc.unit,textColor));
-    current.setVisual(new StatLabel(width/4, 3 * height/4 - 70,70,current.name, current.unit,textColor));
+    soc.setVisual(new StatLabel(3*width/16 + 25,height/4,50,soc.name,soc.unit,textColor));
+    current.setVisual(new StatLabel(width/2, height/4,50,current.name, current.unit,textColor));
     lfaulttext.setVisual(new StatLabel(width - 10, 10, 35,
         lfaulttext.name, lfaulttext.unit,textColor));
     lfault.setVisual(new Indicator("", 3 * width/4, height/4, height/8,
     lfault.min, lfault.max));
     mcstate.setVisual(new StatLabel(width-20, 3*height/4-70, 30, mcstate.name, mcstate.unit, textColor));
+    maxtnum.setVisual(new StatLabel(width/4 + 50, height/2, 50, "#", maxtnum.unit, textColor));
+    maxt.setVisual(new StatLabel(width/8, height/2, 50, maxt.name, maxt.unit, textColor));
+    minvnum.setVisual(new StatLabel(width/4 + 50, 3*height/4, 50, "#", minvnum.unit, textColor));
+    minv.setVisual(new StatLabel(width/8, 3*height/4, 50, minv.name, minv.unit, textColor));
 }
 
 /**

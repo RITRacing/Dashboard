@@ -72,6 +72,7 @@ dashValues[dashValues.length] = gear;
 var rpm = new DashValue("RPM", "", 0, 11500);
 dashValues[dashValues.length] = rpm;
 var soc = new DashValue("SOC", "%", 0, 100);
+soc.update(999);
 dashValues[dashValues.length] = soc;
 var lambdactl = new DashValue("LAMBDA CTL", "", 0, 1);
 dashValues[dashValues.length] = lambdactl;
@@ -99,6 +100,15 @@ var gearv = new DashValue("GearV", "v", 0, 5);
 dashValues[dashValues.length] = gearv;
 var speed = new DashValue("Speed", "kph", 0, 10000);
 dashValues[dashValues.length] = speed;
+var maxtnum = new DashValue("MaxTnum", "", 0, 254);
+maxtnum.update(999);
+dashValues[dashValues.length] = maxtnum;
+var maxt = new DashValue("MaxT", "℃", 0, 1000);
+dashValues[dashValues.length] = maxt;
+var minvnum = new DashValue("MinVnum", "", 0, 254);
+dashValues[dashValues.length] = minvnum;
+var minv = new DashValue("MinV", "v", 0, 3.6);
+dashValues[dashValues.length] = minv;
 
 // updates visuals based on data received
 function setCEL(wt, op){
@@ -173,6 +183,7 @@ function updateData(data){
     }
     if("CURRENT" in data){
         current.update(data["CURRENT"]);
+        /*
         if(current.value <= 10 && currentDisplay == driveDisplay){
             driveDisplay.hide();
             currentDisplay = parkDisplay;
@@ -182,6 +193,7 @@ function updateData(data){
             currentDisplay = driveDisplay;
             driveDisplay.show();
         }
+        */
     }
     if("AUTOUP" in data){
         if(data["AUTOUP"])
@@ -217,6 +229,22 @@ function updateData(data){
 
     if("SPEED" in data){
         speed.update(data["SPEED"]);
+    }
+
+    if("MAXTNUM" in data){
+        maxtnum.update(data["MAXTNUM"]);
+    }
+
+    if("MAXT" in data){
+        maxt.update(data["MAXT"]);
+    }
+
+    if("MINVNUM" in data){
+        minvnum.update(data["MINVNUM"]);
+    }
+
+    if("MINV" in data){
+        minv.update(data["MINV"].substring(0,3));
     }
 
     if(watert.value < 50 || lambdactl.value == 0){
@@ -256,14 +284,16 @@ if(carType == 'c'){
 currentDisplay.show();
 
 function switchDisplay(eventArgs){
-    if(currentDisplay == parkDisplay){
-        currentDisplay.hide();
-        currentDisplay = secondaryDisplay;
-        currentDisplay.show();
-    }else if(currentDisplay == secondaryDisplay){
-        currentDisplay.hide();
-        currentDisplay = parkDisplay;
-        currentDisplay.show();
+    if(carType == 'c'){
+        if(currentDisplay == parkDisplay){
+            currentDisplay.hide();
+            currentDisplay = secondaryDisplay;
+            currentDisplay.show();
+        }else if(currentDisplay == secondaryDisplay){
+            currentDisplay.hide();
+            currentDisplay = parkDisplay;
+            currentDisplay.show();
+        }
     }
 }
 

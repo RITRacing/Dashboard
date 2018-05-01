@@ -58,7 +58,7 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl,
 void shift_controller::shift(bool up){
     mx.lock();
     if(up){
-        if(!LOCKOUTS || (LOCKOUTS && model->gear() < MAX_GEAR){
+        if(!LOCKOUTS || (LOCKOUTS && model->gear() < MAX_GEAR)){
             cout << "upshifting" << endl;
             msgmx.lock();
             shift_msg[0] = UPSHIFT_MSG;
@@ -106,8 +106,8 @@ bool shift_controller::pressed(bool up){
 **/
 bool shift_controller::auto_should_shift(){
     int rpm = model->rpm();
-    int gear = model->gear();
-    return autoup_status && rpm >= AUTOUP_TRIGGER && gear < MAX_GEAR;
+    //int gear = model->gear();
+    return autoup_status && rpm >= AUTOUP_TRIGGER; //&& gear < MAX_GEAR;
     //return autoup_status;
 }
 
@@ -132,7 +132,7 @@ void shift_controller::send_ecu_msg(){
 * Determine which kindof shift is happenening and execute it
 **/
 void * trigger_shift(void* p){
-    //SLEEP(.05);
+    SLEEP(.05);
     bool upon = shiftc->pressed(UP);
     bool downon = shiftc->pressed(DOWN);
     cout << "paddle callback" << endl;

@@ -58,6 +58,13 @@ void can_reader::gather(){
         case MCS_INTERNAL_STATE_ID:
             model->set(MCS, mc_states[msg[0]]);
             break;
+        case BMS_TEMP_ID:
+            model->set(MAXTNUM, to_string(msg[5]));
+            model->set(MAXT, to_string(msg[4]));
+            break;
+        case BMS_VOLT_ID:
+            model->set(MINVNUM, to_string(msg[3]));
+            model->set(MINV, to_string((float)msg[2] * 0.1));
         // TODO write telemetry data case(s)
     }
 }

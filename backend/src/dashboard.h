@@ -39,12 +39,16 @@ enum op_mode{
 #define LAMBDACTL "LAMBDACTL"
 #define FLC "FLC"
 
+
 // e car
 #define CURRENT "CURRENT"
 #define LFAULT "LFAULT"
 #define SOC "SOC"
 #define MCS "MCS" // motor controller state
-
+#define MAXTNUM "MAXTNUM" // # cell with max temp
+#define MAXT "MAXT"// temp of cell with max temp
+#define MINVNUM "MINVNUM" // cell with min voltage
+#define MINV "MINV" // voltage of cell with min voltage
 // telemetry
 #define BRAKEP "BRAKEP" // integer psi or bar 0 - 3000psi
 #define SANGLE "SANGLE" // 1dec deg -90 - 90
@@ -82,6 +86,12 @@ enum op_mode{
 
 // Level Fault Indication Bits (e car)
 #define BMS_FLAGS_ID 0x0622
+
+// max temp cell # and value
+#define BMS_TEMP_ID 0x627
+
+// min voltage cell # and value
+#define BMS_VOLT_ID 0x623
 
 // Indication of current motor controller state
 #define MCS_INTERNAL_STATE_ID 0x0093
