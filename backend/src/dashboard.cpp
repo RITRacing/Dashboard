@@ -6,10 +6,11 @@
 #include <csignal>
 #include <string>
 #include <unistd.h>
-#include <stdio.h>
-#include <cstdlib>
+//#include <stdio.h>
+//#include <cstdlib>
 #include <thread>
-#include "wiringPi.h"
+#include <wiringPi.h>
+
 using namespace std;
 
 shift_controller * shiftc;
@@ -29,14 +30,24 @@ void sigint_handle(int signal){
  **/
 void initialize(op_mode mode, string filename){
     wiringPiSetupGpio();
+
+    #ifdef DEBUG
     cout << "Waiting for frontend..." << endl;
-	dash_model model(PORT); // create model, waits for server to connect
+    #endif
+
+    dash_model model(PORT); // create model, waits for server to connect
+
+    #ifdef DEBUG
     cout << "frontend connected" << endl;
+    #endif
+
     CAN * can = new CAN(); // connect to can0
 
+    #ifdef ENABLE_GPS
     // start the GPS thread
     pthread_t gpsthread;
     pthread_create(&gpsthread, NULL, gps_routine, can);
+    #endif
 
     // create and start the shift_controller
     shiftc = new shift_controller(&model, can, UP_LISTEN, DOWN_LISTEN,

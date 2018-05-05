@@ -1,5 +1,5 @@
 #include "shift_controller.h"
-#include "wiringPi.h"
+#include <wiringPi.h>
 #include "dashboard.h"
 #include "CAN.h"
 #include <iostream>

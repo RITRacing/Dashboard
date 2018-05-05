@@ -133,9 +133,16 @@ static string mc_states[16] = {
 
 #define SHIFT_MSG_ID 0x610
 
+// device file path for USB serial port
 #define TELEMETRY_PORT "/dev/ttyUSB0"
+
+//device file path for onboard serial port
 #define GPS_PORT "/dev/ttyS0"
+
+// contains latitude and longitude
 #define GPS_ID 0x00AA
+
+// contains course and velocity
 #define GPS_ID_SEC 0x00AB
 
 #endif

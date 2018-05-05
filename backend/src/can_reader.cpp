@@ -65,6 +65,7 @@ void can_reader::gather(){
         case BMS_VOLT_ID:
             model->set(MINVNUM, to_string(msg[3]));
             model->set(MINV, to_string((float)msg[2] * 0.1));
+            break;
         // TODO write telemetry data case(s)
     }
 }

@@ -5,12 +5,9 @@
 #include <string>
 #include <sstream>
 #include <netinet/in.h>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <netinet/tcp.h>
 #include <termios.h>
-#include <fcntl.h>
 #include <unistd.h>
 
 using namespace std;
@@ -64,7 +61,8 @@ dash_model::dash_model(int port){
             perror("Frontend Socket initialization failed");
             exit(EXIT_FAILURE);
     }
-/*
+
+    #ifdef ENABLE_TELEMETRY
     // now open telemetry Socket (serial port to xbee)
     telefd = open(TELEMETRY_PORT, O_RDWR | O_NOCTTY | O_NDELAY);
     if(telefd == -1){
@@ -89,7 +87,7 @@ dash_model::dash_model(int port){
     options.c_cflag |= CS8;
     options.c_cflag &= ~CRTSCTS;
     tcsetattr(telefd, TCSANOW, &options); // set these options NOW
-    */
+    #endif
 }
 
 /**

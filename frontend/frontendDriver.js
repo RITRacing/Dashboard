@@ -211,7 +211,6 @@ function updateData(data){
         }
     }
     if("FLC" in data){
-        console.log("FLC in data!");
         flc.update(data["FLC"].substring(0,4));
     }
 

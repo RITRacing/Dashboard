@@ -43,19 +43,21 @@ void informer::connect(dash_model *ml){
 **/
 void informer::loop(){
     shouldContinue = true;
+    
+    #ifdef ENABLE_TELEMETRY
     uint8_t timer = 0;
-    //sd_notify (0, "READY=1"); // tell systemd initialization has finished
+    #endif
+
     while(shouldContinue){
-        //sd_notify (0, "WATCHDOG=1"); // ping systemd
         gather(); // get the info
         model->update_frontend(); // send the info
-        /*
-        if(timer == 10){
+        #ifdef ENABLE_TELEMETRY
+        if(timer == 100){
             model->update_ground_station();
             timer = 0;
         }
         ++timer;
-        */
+        #endif
     }
 }
 
@@ -66,6 +68,9 @@ void informer::finish(){
     shouldContinue = false;
 }
 
+/**
+* Loops, reading latitude and longitude from GPS and sending over CAN
+**/
 void * gps_routine(void * p){
     // generate file name
     auto t = time(nullptr);
@@ -75,12 +80,8 @@ void * gps_routine(void * p){
     ss << put_time(tm, "%d-%m-%Y_%H-%M");
     filename = ss.str();
     FILE * fileout = fopen(filename.c_str(), "w");
-    //CAN can = *((CAN*)p);
     gps_init();
-    //MPU6050 mpu;
-    //mpu.initialize();
-    //int16_t ax, ay; // acceleration in x and y
-    //int16_t az; // z axis, unused
+
     loc_t current;
     while(1){
         gps_location(&current);
