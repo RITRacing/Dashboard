@@ -14,7 +14,7 @@ can_reader::can_reader(CAN * c){
 }
 
 /**
-* Implements true virtual Informer.gather.
+* Implements true virtual Informer.gather
 * Reads a CAN message from the bus and sets the model according to what it read.
 **/
 void can_reader::gather(){
