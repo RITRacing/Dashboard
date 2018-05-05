@@ -13,7 +13,7 @@
 #define BOUNCE_TIME 200 // milliseconds
 #define MAX_GEAR 4
 #define SPEED_LOCKOUT 20 // kph
-#define SHIFT_HOLD 0.2 // sec
+#define SHIFT_HOLD 0.5 // sec
 
 // paddle pins
 #define UP_LISTEN 17
@@ -23,12 +23,12 @@
 #define UP_OUT 2
 #define DOWN_OUT 3
 
-// shift intent messages for greedy ECU
+// shift state messages for greedy ECU
 #define UPSHIFT_MSG 0x02
 #define DOWNSHIFT_MSG 0x01
 #define NOSHIFT_MSG 0x00
 
-// number of up or down intent messages to feed greedy ECU per shift
+// number of up or down state messages to feed greedy ECU per shift
 #define SHIFT_MSG_COUNT 10
 
 #define LOCKOUTS false
@@ -79,9 +79,9 @@ extern shift_controller * shiftc;
 
 static long bounce = BOUNCE_TIME; // current time since last shift attempt
 static void paddle_callback();
-static mutex mx;
-static mutex msgmx;
-static mutex automx;
+static mutex mx; // restricts shifting operations
+static mutex msgmx; // restricts access to message
+static mutex automx; // used to stop both paddles from toggling autoup
 static void * message_routine(void* p);
 
 #endif

@@ -5,9 +5,12 @@
 #include <string>
 #include <sstream>
 #include <netinet/in.h>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <netinet/tcp.h>
 #include <termios.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 using namespace std;
@@ -103,7 +106,8 @@ void dash_model::set(string key, string value){
 }
 
 /**
-* Build a simple json from a map for the frontend
+* Build a simple json from a map for the frontend.
+* Provides less overhead than a JSON construction library for now.
 * @param m: the map
 **/
 string dash_model::json_from_map(map<string,string> m){
@@ -147,6 +151,8 @@ void dash_model::update_ground_station(){
     write(telefd, json, strlen(json));
     modelmx.unlock();
 }
+
+// the below 3 functions should utilize a helper (there's repeated code):
 
 /**
 * Get the gear from the model

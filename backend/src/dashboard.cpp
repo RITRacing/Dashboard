@@ -6,8 +6,6 @@
 #include <csignal>
 #include <string>
 #include <unistd.h>
-//#include <stdio.h>
-//#include <cstdlib>
 #include <thread>
 #include <wiringPi.h>
 

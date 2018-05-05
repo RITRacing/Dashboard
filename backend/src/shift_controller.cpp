@@ -41,9 +41,6 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl,
     pthread_create(&auto_thread, NULL, autup_routine, NULL);
     pthread_detach(auto_thread);
 
-    // set up outputs
-    //pinMode(UP_OUT, OUTPUT); pinMode(DOWN_OUT, OUTPUT);
-
     // set up paddle interrupts
     pinMode(up_listen, INPUT); pinMode(down_listen, INPUT);
     pullUpDnControl(up_listen, PUD_UP);
@@ -53,13 +50,12 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl,
 }
 
 /**
-* Executes a shift by sending the ECU shift messages
+* Tells ECU to cut spark, actuates solenoids that trigger pneumatic shift
 **/
 void shift_controller::shift(bool up){
     mx.lock();
     if(up){
         if(!LOCKOUTS || (LOCKOUTS && model->gear() < MAX_GEAR)){
-            cout << "upshifting" << endl;
             msgmx.lock();
             shift_msg[0] = UPSHIFT_MSG;
             pack->start_upshift();
@@ -103,12 +99,12 @@ bool shift_controller::pressed(bool up){
 
 /**
 * Get if autoup is enabled and RPM is above threshold
+* Should check gear, but Gear position is currently being fixed
 **/
 bool shift_controller::auto_should_shift(){
     int rpm = model->rpm();
     //int gear = model->gear();
     return autoup_status && rpm >= AUTOUP_TRIGGER; //&& gear < MAX_GEAR;
-    //return autoup_status;
 }
 
 /**
@@ -120,8 +116,6 @@ void shift_controller::send_ecu_msg(){
         ++count;
     }
     if(count == SHIFT_MSG_COUNT){
-        //digitalWrite(UP_OUT, LOW);
-        //digitalWrite(DOWN_OUT, LOW);
         pack->stop_shifting();
         count = 0;
         shift_msg[0] = NOSHIFT_MSG;
@@ -132,10 +126,12 @@ void shift_controller::send_ecu_msg(){
 * Determine which kindof shift is happenening and execute it
 **/
 void * trigger_shift(void* p){
-    SLEEP(.05);
+    SLEEP(SHIFT_HOLD);
     bool upon = shiftc->pressed(UP);
     bool downon = shiftc->pressed(DOWN);
+    #ifdef DEBUG
     cout << "paddle callback" << endl;
+    #endif
     // check if both are down, then check upshifter, then downshifter
     if(upon && downon){
             SLEEP(AUTOUP_HOLD);
@@ -143,15 +139,21 @@ void * trigger_shift(void* p){
             // automx keeps the second from turning off autoup
             if(automx.try_lock() && shiftc->pressed(UP)
                 && shiftc->pressed(DOWN)){
+                #ifdef DEBUG
                 cout << "AUTO: " << shiftc->is_autoup() << endl;
+                #endif
                 shiftc->set_autoup(!shiftc->is_autoup());
             }
             automx.unlock();
     }else if(upon){
+        #ifdef DEBUG
         cout << "UP" << endl;
+        #endif
         shiftc->shift(UP);
     }else if(downon){
+        #ifdef DEBUG
         cout << "DOWN" << endl;
+        #endif
         shiftc->shift(DOWN);
     }
     return NULL;
@@ -170,7 +172,7 @@ void paddle_callback(){
 }
 
 /**
-* Sends a message to the ECU indicating shift intent every millisecond
+* Sends a message to the ECU indicating shift intent every millisecond.
 **/
 void * message_routine(void* p){
     uint8_t count = 0;
@@ -191,7 +193,6 @@ racepack::racepack(int up, int dn){
     down_pin = dn;
 
     pinMode(up_pin, OUTPUT); pinMode(down_pin, OUTPUT);
-    //digitalWrite(up_pin, LOW); digitalWrite(down_pin, LOW);
     stop_shifting();
 }
 
