@@ -1,0 +1,11 @@
+{
+	"display_width": 780,
+	"display_height": 460,
+	"logoURL":"resources/ritracing.png",
+	"background": "black",
+    "cool":"blue",
+    "nominal":"green",
+    "intermediate":"yellow",
+    "maximal":"red",
+	"car_type":"e"
+}
