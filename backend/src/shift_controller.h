@@ -7,13 +7,14 @@
 
 #define PADDLE_HOLD 0.15 // sec
 #define AUTOUP_HOLD 2 // sec
-#define AUTOUP_TRIGGER 10500 // RPM
+#define AUTOUP_TRIGGER 11500 // RPM
+#define AUTOUP_WAIT .18 // sec
 #define UP true
 #define DOWN false
 #define BOUNCE_TIME 200 // milliseconds
 #define MAX_GEAR 4
 #define SPEED_LOCKOUT 20 // kph
-#define SHIFT_HOLD 0.5 // sec
+#define SHIFT_HOLD 0.05 // sec
 
 // paddle pins
 #define UP_LISTEN 17

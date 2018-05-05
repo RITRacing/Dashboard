@@ -11,7 +11,7 @@ using namespace std;
 **/
 void * autup_routine(void*p){
     while(true){
-        SLEEP(.18);
+        SLEEP(AUTOUP_WAIT);
         if(shiftc->auto_should_shift()){
             shiftc->shift(UP);
         }
@@ -104,7 +104,8 @@ bool shift_controller::pressed(bool up){
 bool shift_controller::auto_should_shift(){
     int rpm = model->rpm();
     //int gear = model->gear();
-    return autoup_status && rpm >= AUTOUP_TRIGGER; //&& gear < MAX_GEAR;
+    int speed = model->speed();
+    return autoup_status && speed > 8 && rpm >= AUTOUP_TRIGGER; //&& gear < MAX_GEAR;
 }
 
 /**
