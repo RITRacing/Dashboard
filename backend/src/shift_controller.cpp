@@ -50,27 +50,53 @@ shift_controller::shift_controller(dash_model * m, CAN * c, int upl, int downl,
 }
 
 /**
+* Determine if an upshift should occur.
+**/
+bool shift_controller::should_upshift(){
+    return model->gear() < MAX_GEAR;
+}
+
+/**
+* Determine if a downshift should occur.
+**/
+bool shift_controller::should_downshift(){
+    int gear = model->gear();
+    int rpm = model->rpm();
+    if(rpm >= DOWNSHIFT_LOCKOUT)
+        return false;
+
+    if(gear == 0)
+        return false;
+
+    if(gear == 1)
+        return model->speed() <= SPEED_LOCKOUT;
+    else
+        return true;
+}
+
+/**
 * Tells ECU to cut spark, actuates solenoids that trigger pneumatic shift
 **/
 void shift_controller::shift(bool up){
-    mx.lock();
-    if(up){
-        if(!LOCKOUTS || (LOCKOUTS && model->gear() < MAX_GEAR)){
-            msgmx.lock();
-            shift_msg[0] = UPSHIFT_MSG;
-            pack->start_upshift();
-            msgmx.unlock();
-        }
-    }else{
-        if(!LOCKOUTS || LOCKOUTS && ((model->gear() == 1 && model->speed() < SPEED_LOCKOUT) ||
-            model->gear() > 1)){
+    if(mx.try_lock()){
+        if(up){
+            if(!LOCKOUTS || (LOCKOUTS && should_upshift())){//(LOCKOUTS && model->gear() < MAX_GEAR)){
                 msgmx.lock();
-                shift_msg[0] = DOWNSHIFT_MSG;
-                pack->start_downshift();
+                shift_msg[0] = UPSHIFT_MSG;
+                pack->start_upshift();
                 msgmx.unlock();
+            }
+        }else{
+            if(!LOCKOUTS || (LOCKOUTS && should_downshift())){//((model->gear() == 1 && model->speed() < SPEED_LOCKOUT) ||
+                    msgmx.lock();
+                    shift_msg[0] = DOWNSHIFT_MSG;
+                    pack->start_downshift();
+                    msgmx.unlock();
+            }
+
         }
+        mx.unlock();
     }
-    mx.unlock();
 }
 
 /**

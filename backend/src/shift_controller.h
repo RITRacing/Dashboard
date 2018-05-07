@@ -13,7 +13,8 @@
 #define DOWN false
 #define BOUNCE_TIME 200 // milliseconds
 #define MAX_GEAR 4
-#define SPEED_LOCKOUT 20 // kph
+#define DOWNSHIFT_LOCKOUT 8500 // RPM
+#define SPEED_LOCKOUT 0 // kph
 #define SHIFT_HOLD 0.05 // sec
 
 // paddle pins
@@ -32,7 +33,7 @@
 // number of up or down state messages to feed greedy ECU per shift
 #define SHIFT_MSG_COUNT 10
 
-#define LOCKOUTS false
+#define LOCKOUTS true
 
 using namespace std;
 
@@ -68,6 +69,8 @@ public:
     shift_controller(dash_model *m, CAN * c, int upl, int downl, int upout,
         int downout);
     inline void send_ecu_msg();
+    bool should_upshift();
+    bool should_downshift();
     void shift(bool up);
     bool is_autoup();
     bool auto_should_shift();
